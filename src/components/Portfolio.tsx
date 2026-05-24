@@ -100,7 +100,7 @@ export default function Portfolio() {
       : portfolioItems.filter((item) => item.tags.includes(activeTag));
 
   return (
-    <section id="portfolio" className="py-24 px-6 border-t border-black/6">
+    <section id="portfolio" className="py-14 md:py-24 px-6 border-t border-black/6">
       <div className="max-w-7xl mx-auto">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-14">

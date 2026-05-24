@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
@@ -13,11 +14,16 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
   }, []);
 
   return (
@@ -32,20 +38,29 @@ export default function Navbar() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-25 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 md:h-25 flex items-center justify-between">
           <a href="#" className="flex items-center group">
+            {/* Mobile: static logo — multiply blend on video doesn't composite on iOS */}
+            <Image
+              src="/assets/logo/logo-clean.png"
+              alt="Graft Media"
+              width={120}
+              height={30}
+              className="md:hidden h-8 w-auto opacity-80 group-hover:opacity-100 transition-opacity"
+            />
+            {/* Desktop: animated morphing logo */}
             <video
+              ref={videoRef}
               autoPlay
               muted
               loop
               playsInline
               aria-label="Graft Media"
-              className="h-25 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+              className="hidden md:block h-25 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
               style={{ mixBlendMode: "multiply" }}
             >
-              {/* VP9 WebM carries true alpha on Chrome/Firefox/Edge.
-                  On Safari, mix-blend-mode: multiply knocks out the white bg against the light navbar. */}
               <source src="/assets/logo/logo-morph-alpha.webm" type="video/webm" />
+              <source src="/assets/logo/logo-morph.mp4" type="video/mp4" />
             </video>
           </a>
 
@@ -88,7 +103,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-[#F7F6F2]/97 backdrop-blur-xl pt-20 px-6 md:hidden"
+            className="fixed inset-0 z-40 bg-[#F7F6F2]/97 backdrop-blur-xl pt-16 px-6 md:hidden"
             onClick={() => setMenuOpen(false)}
           >
             <nav className="flex flex-col gap-1 pt-8">

@@ -37,7 +37,7 @@ export default function Process() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="process" ref={ref} className="py-32 px-6 border-t border-black/6">
+    <section id="process" ref={ref} className="py-16 md:py-32 px-6 border-t border-black/6">
       <div className="max-w-7xl mx-auto">
 
         <motion.div
@@ -45,7 +45,7 @@ export default function Process() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease }}
-          className="mb-20"
+          className="mb-12 md:mb-20"
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
             How it works

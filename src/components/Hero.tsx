@@ -66,7 +66,55 @@ export default function Hero() {
   const dotOpacities = [dot0, dot1, dot2, dot3];
 
   return (
-    <div ref={containerRef} style={{ height: "400vh" }} className="relative">
+    <>
+    {/* ─── MOBILE HERO ───────────────────────────────────────────────── */}
+    <section className="md:hidden relative min-h-[100svh] bg-[#F7F6F2] flex flex-col items-center justify-center px-6 text-center overflow-hidden pt-20 pb-16">
+      <motion.h1
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, delay: 0.3, ease }}
+        className="text-[clamp(4rem,16vw,5.5rem)] font-black leading-[0.88] tracking-tighter"
+      >
+        <span className="block text-[#0A0A0A]">Brief in.</span>
+        <span className="block text-black/10">Campaign out.</span>
+      </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.9 }}
+        className="mt-8 text-sm text-black/35 max-w-xs leading-relaxed"
+      >
+        We take your product and build the visual world around it — at machine speed.
+      </motion.p>
+
+      <motion.a
+        href="#portfolio"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 1.1, ease }}
+        className="mt-10 inline-flex px-9 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-[#0A0A0A] text-white"
+      >
+        See the work
+      </motion.a>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
+        className="absolute bottom-10 flex flex-col items-center gap-2 text-black/20"
+      >
+        <span className="text-[9px] tracking-[0.4em] uppercase">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+          className="w-px h-7 bg-gradient-to-b from-black/20 to-transparent"
+        />
+      </motion.div>
+    </section>
+
+    {/* ─── DESKTOP SCROLL-SCRUB HERO ─────────────────────────────────── */}
+    <div ref={containerRef} style={{ height: "400vh" }} className="relative hidden md:block">
       <div className="sticky top-0 h-screen overflow-hidden bg-[#F7F6F2] flex items-center justify-center">
 
         {/* BACKDROP HEADLINE — giant type behind the video */}
@@ -99,24 +147,6 @@ export default function Hero() {
           >
             <source src="/assets/videos/hero-morph.mp4" type="video/mp4" />
           </video>
-        </motion.div>
-
-        {/* INTRO BADGE — phase 0, positioned below navbar */}
-        <motion.div
-          style={{ opacity: introOpacity, y: introY }}
-          className="absolute top-0 left-0 right-0 flex justify-center pt-28 z-20 pointer-events-none"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease }}
-            className="inline-flex items-center gap-3 rounded-full px-5 py-2 border border-black/10 bg-[#F7F6F2]/60 backdrop-blur-sm"
-          >
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--accent)" }} />
-            <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-black/35">
-              AI-Led Creative Production
-            </span>
-          </motion.div>
         </motion.div>
 
         {/* INTRO SUBTITLE + SCROLL — phase 0, positioned at bottom */}
@@ -230,5 +260,6 @@ export default function Hero() {
         </div>
       </div>
     </div>
+    </>
   );
 }

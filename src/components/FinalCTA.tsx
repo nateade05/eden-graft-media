@@ -11,7 +11,7 @@ export default function FinalCTA() {
   const y = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   return (
-    <section id="cta" ref={ref} className="relative py-52 px-6 overflow-hidden border-t border-black/6">
+    <section id="cta" ref={ref} className="relative py-24 md:py-52 px-6 overflow-hidden border-t border-black/6">
       {/* Subtle vignette */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div

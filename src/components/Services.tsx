@@ -30,7 +30,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="py-40 px-6 border-t border-black/6">
+    <section id="services" className="py-20 md:py-40 px-6 border-t border-black/6">
       <div className="max-w-7xl mx-auto">
 
         <motion.div
@@ -38,7 +38,7 @@ export default function Services() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease }}
-          className="mb-20"
+          className="mb-12 md:mb-20"
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
             What we do
@@ -56,7 +56,7 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: i * 0.1, ease }}
-              className="relative overflow-hidden bg-[#F7F6F2] p-10 flex flex-col group hover:bg-white transition-colors duration-500"
+              className="relative overflow-hidden bg-[#F7F6F2] p-6 md:p-10 flex flex-col group hover:bg-white transition-colors duration-500"
             >
               {/* Ghost number — decorative backdrop */}
               <span

@@ -64,10 +64,10 @@ function LogoMarquee() {
 
 export default function CredibilityStrip() {
   return (
-    <section className="relative py-20 overflow-hidden border-t border-black/6">
+    <section className="relative py-12 md:py-20 overflow-hidden border-t border-black/6">
 
       {/* Stats */}
-      <div className="max-w-5xl mx-auto px-6 mb-20">
+      <div className="max-w-5xl mx-auto px-6 mb-12 md:mb-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((s, i) => (
             <motion.div
