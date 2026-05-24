@@ -11,7 +11,6 @@ const stats = [
   { value: "48h",  label: "Avg. turnaround" },
   { value: "10×",  label: "Faster than a shoot" },
   { value: "∞",    label: "Format variations" },
-  { value: "100%", label: "AI-produced" },
 ];
 
 function LogoMarquee() {
@@ -53,7 +52,7 @@ function LogoMarquee() {
               alt={client.name}
               width={400}
               height={80}
-              className="h-7 w-auto object-contain grayscale opacity-40 hover:opacity-70 hover:grayscale-0 transition-all duration-300"
+              className={`${client.sizeClass ?? "h-7"} w-auto object-contain grayscale opacity-40 hover:opacity-70 hover:grayscale-0 transition-all duration-300`}
             />
           </div>
         ))}
@@ -68,7 +67,7 @@ export default function CredibilityStrip() {
 
       {/* Stats */}
       <div className="max-w-5xl mx-auto px-6 mb-12 md:mb-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-3 gap-8">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -102,8 +101,6 @@ export default function CredibilityStrip() {
       </motion.div>
 
       <LogoMarquee />
-
-      <div className="mt-16 border-t border-black/6" />
     </section>
   );
 }

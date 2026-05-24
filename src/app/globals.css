@@ -83,6 +83,15 @@ body {
   animation-play-state: paused;
 }
 
+/* Hide native iOS/WebKit video play button overlay */
+video::-webkit-media-controls,
+video::-webkit-media-controls-enclosure,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 /* Glow pulse */
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.4; }

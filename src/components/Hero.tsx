@@ -5,64 +5,123 @@ import {
   motion,
   useScroll,
   useTransform,
-  useMotionValueEvent,
 } from "framer-motion";
 
-const SCRUB_DURATION = 11.5;
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const rafRef = useRef<number>(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const vhRef = useRef(0);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
+  // Track viewport height for the manual progress calculation
+  useEffect(() => {
+    const update = () => { vhRef.current = window.innerHeight; };
+    update();
+    window.addEventListener("resize", update, { passive: true });
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
-      const v = videoRef.current;
-      if (!v) return;
-      const target = Math.min(p * SCRUB_DURATION, SCRUB_DURATION);
-      if (Math.abs(v.currentTime - target) > 0.016) v.currentTime = target;
-    });
+  // Use raw window scrollY instead of target-ref tracking — avoids
+  // measurement issues when the container starts hidden or SSR-painted.
+  // Container is 650vh starting at page top → progress = scrollY / (6.5 × vh).
+  const { scrollY } = useScroll();
+  const scrollYProgress = useTransform(scrollY, (latest) => {
+    const h = (vhRef.current || 800) * 6.5;
+    return Math.max(0, Math.min(1, latest / h));
   });
 
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.pause();
-    v.currentTime = 0;
-    return () => cancelAnimationFrame(rafRef.current);
+    videoRef.current?.play().catch(() => {});
   }, []);
+
+  // Mobile: draw video onto canvas so no native play-button overlay ever appears
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const video = document.createElement("video");
+    video.src = "/assets/videos/hero-morph.mp4";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.load();
+
+    let raf = 0;
+    let started = false;
+
+    const drawLoop = () => {
+      if (video.readyState >= 2) {
+        if (canvas.width !== video.videoWidth && video.videoWidth > 0) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
+      raf = requestAnimationFrame(drawLoop);
+    };
+
+    const start = () => {
+      if (started) return;
+      video.play().then(() => { started = true; drawLoop(); }).catch(() => {});
+    };
+
+    start();
+    document.addEventListener("touchstart", start, { once: true, passive: true });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      video.pause();
+      document.removeEventListener("touchstart", start);
+    };
+  }, []);
+
+  // 570vh container. Video LEADS text: settles into position, then text slides in.
+  //
+  // vh→progress: 100vh = 0.1754  |  Phases:
+  //   0–103vh  (0–0.18):   Intro
+  //   103–143vh (0.18–0.25): Intro fades + video races left  [simultaneous]
+  //   143vh    (0.25):      Video settled at -22vw — Speed panel slides in
+  //   143–263vh (0.25–0.46): Speed panel visible
+  //   263–336vh (0.46–0.59): Speed fades + video sweeps left→right [continuous]
+  //                          Variations fades in, complete at 0.59
+  //   336vh    (0.59):      Video settled at +22vw — Variations fully visible
+  //   336–428vh (0.59–0.75): Variations visible
+  //   428–479vh (0.75–0.84): Variations fades + video races back to center + CTA
+  //   479–570vh (0.84–1.0):  Buffer
 
   const videoX = useTransform(
     scrollYProgress,
-    [0, 0.14, 0.28, 0.50, 0.58, 0.76, 0.88, 1],
-    ["0vw", "0vw", "-22vw", "-22vw", "0vw", "22vw", "22vw", "0vw"]
+    // continuous sweep: no center pause between left and right
+    [0, 0.14, 0.20, 0.37, 0.47, 0.66, 0.74, 1],
+    ["0vw", "0vw", "-22vw", "-22vw", "22vw", "22vw", "0vw", "0vw"]
   );
-  const videoScale = useTransform(scrollYProgress, [0, 0.07, 0.88, 1], [0.9, 1, 1, 0.96]);
-  const videoOpacity = useTransform(scrollYProgress, [0.92, 1], [1, 0]);
+  const videoScale = useTransform(scrollYProgress, [0, 0.06, 0.88, 1], [0.9, 1, 1, 0.96]);
+  const videoOpacity = useTransform(scrollYProgress, [0.90, 1], [1, 0]);
 
-  const introOpacity = useTransform(scrollYProgress, [0.0, 0.16], [1, 0]);
-  const introY = useTransform(scrollYProgress, [0.0, 0.16], [0, -40]);
+  // Intro fades in lockstep with video racing left
+  const introOpacity = useTransform(scrollYProgress, [0.14, 0.20], [1, 0]);
+  const introY = useTransform(scrollYProgress, [0.14, 0.20], [0, -40]);
 
-  const rightOpacity = useTransform(scrollYProgress, [0.24, 0.35, 0.48, 0.58], [0, 1, 1, 0]);
-  const rightX = useTransform(scrollYProgress, [0.24, 0.35, 0.48, 0.58], ["28px", "0px", "0px", "28px"]);
+  // Speed panel: fades out as soon as video starts sweeping right
+  const rightOpacity = useTransform(scrollYProgress, [0.20, 0.26, 0.37, 0.42], [0, 1, 1, 0]);
+  const rightX = useTransform(scrollYProgress, [0.20, 0.26, 0.37, 0.42], ["28px", "0px", "0px", "28px"]);
 
-  const leftOpacity = useTransform(scrollYProgress, [0.62, 0.72, 0.84, 0.92], [0, 1, 1, 0]);
-  const leftX = useTransform(scrollYProgress, [0.62, 0.72, 0.84, 0.92], ["-28px", "0px", "0px", "-28px"]);
+  // Variations panel: fades in during sweep, complete when video lands right; fades out when video races back
+  const leftOpacity = useTransform(scrollYProgress, [0.42, 0.47, 0.64, 0.71], [0, 1, 1, 0]);
+  const leftX = useTransform(scrollYProgress, [0.42, 0.47, 0.64, 0.71], ["-28px", "0px", "0px", "-28px"]);
 
-  const ctaOpacity = useTransform(scrollYProgress, [0.9, 0.97], [0, 1]);
-  const ctaY = useTransform(scrollYProgress, [0.9, 0.97], [24, 0]);
+  const ctaOpacity = useTransform(scrollYProgress, [0.71, 0.74], [0, 1]);
+  const ctaY = useTransform(scrollYProgress, [0.71, 0.74], [24, 0]);
 
-  const dot0 = useTransform(scrollYProgress, [0.01, 0.09, 0.17], [0.15, 1, 0.15]);
-  const dot1 = useTransform(scrollYProgress, [0.30, 0.38, 0.46], [0.15, 1, 0.15]);
-  const dot2 = useTransform(scrollYProgress, [0.63, 0.71, 0.79], [0.15, 1, 0.15]);
-  const dot3 = useTransform(scrollYProgress, [0.86, 0.94, 1.00], [0.15, 1, 0.15]);
+  const dot0 = useTransform(scrollYProgress, [0.02, 0.09, 0.14], [0.15, 1, 0.15]);
+  const dot1 = useTransform(scrollYProgress, [0.22, 0.27, 0.34], [0.15, 1, 0.15]);
+  const dot2 = useTransform(scrollYProgress, [0.48, 0.53, 0.58], [0.15, 1, 0.15]);
+  const dot3 = useTransform(scrollYProgress, [0.63, 0.68, 0.74], [0.15, 1, 0.15]);
   const dotOpacities = [dot0, dot1, dot2, dot3];
 
   return (
@@ -70,17 +129,12 @@ export default function Hero() {
     {/* ─── MOBILE HERO ───────────────────────────────────────────────── */}
     <section className="md:hidden relative min-h-[100svh] bg-[#F7F6F2] flex flex-col items-center justify-center px-6 text-center overflow-hidden pt-20 pb-16">
 
-      {/* Looping video — multiply blend knocks out the white background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
+      {/* Canvas — video drawn here via JS, no native play-button overlay */}
+      <canvas
+        ref={canvasRef}
         className="absolute inset-0 w-full h-full object-contain pointer-events-none"
         style={{ mixBlendMode: "multiply" }}
-      >
-        <source src="/assets/videos/hero-morph.mp4" type="video/mp4" />
-      </video>
+      />
 
       <motion.h1
         initial={{ opacity: 0, y: 30 }}
@@ -127,7 +181,7 @@ export default function Hero() {
     </section>
 
     {/* ─── DESKTOP SCROLL-SCRUB HERO ─────────────────────────────────── */}
-    <div ref={containerRef} style={{ height: "400vh" }} className="relative hidden md:block">
+    <div ref={containerRef} style={{ height: "650vh" }} className="relative max-md:hidden">
       <div className="sticky top-0 h-screen overflow-hidden bg-[#F7F6F2] flex items-center justify-center">
 
         {/* BACKDROP HEADLINE — giant type behind the video */}
@@ -153,6 +207,8 @@ export default function Hero() {
         >
           <video
             ref={videoRef}
+            autoPlay
+            loop
             muted
             playsInline
             preload="auto"
@@ -194,7 +250,7 @@ export default function Hero() {
         {/* RIGHT PANEL — phase 1: Speed */}
         <motion.div
           style={{ opacity: rightOpacity, x: rightX }}
-          className="absolute right-[3vw] top-1/2 -translate-y-1/2 w-[26vw] max-w-[360px] z-20 pointer-events-none"
+          className="absolute left-[62%] top-1/2 -translate-y-1/2 w-[26vw] max-w-[360px] z-20 pointer-events-none"
         >
           <p className="text-[10px] tracking-[0.28em] uppercase text-black/25 mb-4 font-semibold">
             Speed
@@ -212,7 +268,7 @@ export default function Hero() {
         {/* LEFT PANEL — phase 2: Variations */}
         <motion.div
           style={{ opacity: leftOpacity, x: leftX }}
-          className="absolute left-[3vw] top-1/2 -translate-y-1/2 w-[26vw] max-w-[360px] z-20 pointer-events-none"
+          className="absolute right-[62%] top-1/2 -translate-y-1/2 w-[26vw] max-w-[360px] z-20 pointer-events-none"
         >
           <p className="text-[10px] tracking-[0.28em] uppercase text-black/25 mb-4 font-semibold">
             Variations
@@ -232,7 +288,7 @@ export default function Hero() {
         {/* OUTRO CTA */}
         <motion.div
           style={{ opacity: ctaOpacity, y: ctaY }}
-          className="absolute bottom-14 left-0 right-0 flex flex-col items-center z-20 pointer-events-none"
+          className="absolute top-[85%] left-0 right-0 flex flex-col items-center z-20 pointer-events-none"
         >
           <p className="text-[11px] text-black/25 mb-5 tracking-[0.15em] uppercase">
             Ready to produce?
@@ -244,19 +300,6 @@ export default function Hero() {
             Start a project
           </a>
         </motion.div>
-
-        {/* SCROLL PROGRESS */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex items-center gap-3 z-30">
-          <div className="w-28 h-px bg-black/8 relative overflow-hidden rounded-full">
-            <motion.div
-              className="absolute inset-y-0 left-0 bg-black/30 rounded-full"
-              style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
-            />
-          </div>
-          <span className="text-[9px] tracking-[0.28em] uppercase text-black/18">
-            Explore
-          </span>
-        </div>
 
         {/* Top vignette — keeps navbar readable */}
         <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#F7F6F2] to-transparent pointer-events-none z-30" />
