@@ -69,11 +69,24 @@ export default function Hero() {
     <>
     {/* ─── MOBILE HERO ───────────────────────────────────────────────── */}
     <section className="md:hidden relative min-h-[100svh] bg-[#F7F6F2] flex flex-col items-center justify-center px-6 text-center overflow-hidden pt-20 pb-16">
+
+      {/* Looping video — multiply blend knocks out the white background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+        style={{ mixBlendMode: "multiply" }}
+      >
+        <source src="/assets/videos/hero-morph.mp4" type="video/mp4" />
+      </video>
+
       <motion.h1
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.0, delay: 0.3, ease }}
-        className="text-[clamp(4rem,16vw,5.5rem)] font-black leading-[0.88] tracking-tighter"
+        className="relative z-10 text-[clamp(4rem,16vw,5.5rem)] font-black leading-[0.88] tracking-tighter"
       >
         <span className="block text-[#0A0A0A]">Brief in.</span>
         <span className="block text-black/10">Campaign out.</span>
@@ -83,7 +96,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.9 }}
-        className="mt-8 text-sm text-black/35 max-w-xs leading-relaxed"
+        className="relative z-10 mt-8 text-sm text-black/35 max-w-xs leading-relaxed"
       >
         We take your product and build the visual world around it — at machine speed.
       </motion.p>
@@ -93,7 +106,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 1.1, ease }}
-        className="mt-10 inline-flex px-9 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-[#0A0A0A] text-white"
+        className="relative z-10 mt-10 inline-flex px-9 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-[#0A0A0A] text-white"
       >
         See the work
       </motion.a>
@@ -102,7 +115,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 1.5 }}
-        className="absolute bottom-10 flex flex-col items-center gap-2 text-black/20"
+        className="absolute bottom-10 z-10 flex flex-col items-center gap-2 text-black/20"
       >
         <span className="text-[9px] tracking-[0.4em] uppercase">Scroll</span>
         <motion.div
