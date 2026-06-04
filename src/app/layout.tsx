@@ -9,12 +9,12 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Graft Media — AI-Led Creative Production Studio",
+  title: "Graft Media | AI-Led Creative Production Studio",
   description:
-    "Graft Media is an AI-led creative production studio. We take your product and build the full visual campaign around it — stills, video, and every format — in days, not weeks.",
+    "Graft Media is an AI-led creative production studio. We take your product and build the full visual campaign around it: stills, video, and every format, in days not weeks.",
   keywords: ["AI creative studio", "AI campaign production", "creative direction", "product photography AI", "campaign content", "fashion content studio"],
   openGraph: {
-    title: "Graft Media — AI-Led Creative Production Studio",
+    title: "Graft Media | AI-Led Creative Production Studio",
     description: "Brief in. Campaign out. AI-led creative production for consumer brands.",
     type: "website",
   },

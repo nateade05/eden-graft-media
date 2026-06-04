@@ -55,14 +55,14 @@ const caseStudies: CaseStudy[] = [
     slug: "illvzn",
     client: "ILLVZN",
     title: "Building a Sports Brand from Scratch",
-    description: "Full visual world for an emerging UK sports brand — character design, campaign stills, and short-form video, all in under a week.",
+    description: "Full visual world for an emerging UK sports brand: character design, campaign stills, and short-form video, all in under a week.",
     image: "/assets/wall/illvzn.jpg",
   },
   {
     slug: "charles-keith",
     client: "Charles & Keith",
     title: "Runway Campaign, AI-Produced",
-    description: "Seasonal runway campaign stills and motion assets generated and delivered in 48 hours — no shoot, no travel, no compromise.",
+    description: "Seasonal runway campaign stills and motion assets. No shoot, no travel, no compromise.",
     image: "/assets/wall/ck-summer.jpg",
   },
   {

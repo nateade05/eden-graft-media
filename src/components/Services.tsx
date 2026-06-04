@@ -9,7 +9,7 @@ const phases = [
   {
     number: "01",
     phase: "Concepts",
-    description: "The thinking before anything is made — direction, narrative, and the visual world your brand lives in.",
+    description: "The thinking before anything is made: direction, narrative, and the visual world your brand lives in.",
     deliverables: [
       "Creative direction",
       "Brand voice",
@@ -20,7 +20,7 @@ const phases = [
   {
     number: "02",
     phase: "Asset Creation",
-    description: "Using AI to generate the raw material — every image, render, and visual building block your campaign needs.",
+    description: "Using AI to generate the raw material: every image, render, and visual building block your campaign needs.",
     deliverables: [
       "Character & scene renders",
       "Campaign stills",
@@ -32,7 +32,7 @@ const phases = [
   {
     number: "03",
     phase: "Campaign Production",
-    description: "Static assets become motion. We produce the final content that goes live — cut, graded, and ready to perform.",
+    description: "Static assets become motion. We produce the final content that goes live, cut, graded, and ready to perform.",
     deliverables: [
       "Short-form video",
       "Colour grading",

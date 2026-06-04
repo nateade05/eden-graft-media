@@ -152,7 +152,7 @@ export default function Hero() {
         transition={{ duration: 0.8, delay: 0.9 }}
         className="relative z-10 mt-8 text-sm text-black/35 max-w-xs leading-relaxed"
       >
-        We take your product and build the visual world around it — at machine speed.
+        We take your product and build the visual world around it, at machine speed.
       </motion.p>
 
       <motion.a
@@ -229,7 +229,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.9 }}
             className="text-sm text-black/35 max-w-xs leading-relaxed text-center mb-10"
           >
-            We take your product and build the visual world around it — at machine speed.
+            We take your product and build the visual world around it, at machine speed.
           </motion.p>
 
           <motion.div
@@ -260,7 +260,7 @@ export default function Hero() {
           </h2>
           <p className="text-sm text-black/40 leading-relaxed font-light">
             Traditional shoots take weeks to brief, cast, produce, and retouch.
-            We collapse that timeline — without compromising on creative quality.
+            We collapse that timeline without compromising on creative quality.
           </p>
           <div className="mt-7 w-12 h-px bg-black/25" />
         </motion.div>

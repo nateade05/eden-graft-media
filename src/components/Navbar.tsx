@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
   { label: "Work", href: "#portfolio" },
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
   { label: "Contact", href: "#cta" },
 ];
 
@@ -39,7 +37,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 md:h-25 flex items-center justify-between">
-          <a href="#" className="flex items-center group">
+          <a href="/" className="flex items-center group">
             {/* Mobile: static logo — multiply blend on video doesn't composite on iOS */}
             <Image
               src="/assets/logo/logo-clean.png"

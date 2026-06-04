@@ -16,13 +16,13 @@ const steps = [
     number: "02",
     title: "Concept",
     description:
-      "We develop the visual direction — mood, aesthetic, and the world your product lives in. You review and sign off before a pixel is produced.",
+      "We develop the visual direction: mood, aesthetic, and the world your product lives in. You review and sign off before a pixel is produced.",
   },
   {
     number: "03",
     title: "Production",
     description:
-      "We generate, composite, and refine every asset using AI tools guided by experienced creative direction. Not prompts and hope — deliberate craft.",
+      "We generate, composite, and refine every asset using AI tools guided by experienced creative direction. Not prompts and hope. Deliberate craft.",
   },
   {
     number: "04",

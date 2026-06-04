@@ -15,7 +15,7 @@ export default function Footer() {
         />
 
         <p className="text-xs text-black/20 text-center tracking-wide">
-          © {new Date().getFullYear()} Graft Media — AI-Led Creative Production Studio
+          © {new Date().getFullYear()} Graft Media. AI-Led Creative Production Studio
         </p>
 
         <div className="flex items-center gap-6">
