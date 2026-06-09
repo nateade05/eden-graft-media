@@ -384,8 +384,83 @@ export default function CharlesKeithCaseStudy() {
         </div>
       </section>
 
+      {/* ── 06 Live on the Web ── */}
+      <section className="py-20 md:py-28 px-6 border-t border-black/6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mb-14"
+          >
+            <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
+              06. Live on the Web
+            </p>
+            <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A] max-w-2xl">
+              Campaign to website. Same day.
+            </h2>
+          </motion.div>
+
+          {/* Desktop + mobile side by side */}
+          <div className="flex flex-col md:flex-row items-end gap-4 md:gap-8">
+
+            {/* Desktop browser mock */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="flex-1 min-w-0 overflow-hidden rounded-sm shadow-2xl shadow-black/15"
+            >
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full block"
+              >
+                <source src="/assets/case-studies/charles-keith/web-desktop.mp4" type="video/mp4" />
+              </video>
+            </motion.div>
+
+            {/* Mobile mock */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="w-full md:w-[22%] flex-shrink-0 overflow-hidden rounded-sm shadow-2xl shadow-black/15"
+            >
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full block"
+              >
+                <source src="/assets/case-studies/charles-keith/web-mobile.mp4" type="video/mp4" />
+              </video>
+            </motion.div>
+
+          </div>
+
+          <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-sm text-black/40 max-w-xl leading-relaxed mt-10"
+          >
+            The campaign assets went straight from generation into a live Charles & Keith
+            editorial site — desktop and mobile, no reshoots, no resizing.
+          </motion.p>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
-      <section className="py-24 md:py-36 px-6 border-t border-black/6">
+      <section className="py-24 md:py-36 px-6 bg-[#0A0A0A]">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             variants={fadeUp}
@@ -393,24 +468,24 @@ export default function CharlesKeithCaseStudy() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-6 font-semibold">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-semibold">
               Start your project
             </p>
-            <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-[#0A0A0A] mb-10">
-              Brief in. Campaign out.
+            <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-white mb-10">
+              Your campaign.<br className="hidden sm:block" /> Built in AI.
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/#cta"
-                className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-[#0A0A0A] text-white hover:bg-black/80 transition-colors duration-300"
+                className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-white text-black hover:bg-white/90 transition-colors duration-300"
               >
                 Start a project
               </Link>
               <Link
-                href="/case-studies/illvzn"
-                className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase border border-black/20 text-black/55 hover:border-black/35 hover:text-black/80 transition-all duration-300"
+                href="/case-studies/beverley-knight"
+                className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase border border-white/20 text-white/55 hover:border-white/35 hover:text-white/80 transition-all duration-300"
               >
-                View ILLVZN
+                View Beverley Knight
               </Link>
             </div>
           </motion.div>

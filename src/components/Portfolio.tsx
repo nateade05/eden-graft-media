@@ -48,29 +48,31 @@ type CaseStudy = {
   title: string;
   description: string;
   image: string | null;
+  video?: string;
 };
 
 const caseStudies: CaseStudy[] = [
   {
-    slug: "illvzn",
-    client: "ILLVZN",
-    title: "Building a Sports Brand from Scratch",
-    description: "Full visual world for an emerging UK sports brand: character design, campaign stills, and short-form video, all in under a week.",
-    image: "/assets/wall/illvzn.jpg",
+    slug: "beverley-knight",
+    client: "Beverley Knight",
+    title: "Tour Merch & Music Video, Built in AI",
+    description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour — all AI, zero shoot days.",
+    image: "/assets/case-studies/beverley-knight/card-still.jpg",
+    video: "/assets/case-studies/beverley-knight/card-loop.mp4",
   },
   {
     slug: "charles-keith",
     client: "Charles & Keith",
     title: "Runway Campaign, AI-Produced",
     description: "Seasonal runway campaign stills and motion assets. No shoot, no travel, no compromise.",
-    image: "/assets/wall/ck-summer.jpg",
+    image: "/assets/case-studies/charles-keith/hero.jpg",
   },
   {
-    slug: "coming-soon",
-    client: "Coming Soon",
-    title: "Next Case Study in Production",
-    description: "We're documenting our next project end-to-end. Check back soon.",
-    image: null,
+    slug: "nike",
+    client: "Nike",
+    title: "A Nike Concept. Built Entirely in AI.",
+    description: "Raw characters, street energy, and a concept film. No cast, no crew, no studio — just a brief and the tools.",
+    image: "/assets/case-studies/nike/detail-grill.jpg",
   },
 ];
 
@@ -100,9 +102,9 @@ function WallVideo({ item }: { item: WallItem }) {
       >
         <source src={item.src} type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none" />
       {item.client && (
-        <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none">
           {item.client}
         </p>
       )}
@@ -120,9 +122,9 @@ function WallImage({ item }: { item: WallItem }) {
         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none" />
       {item.client && (
-        <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none">
           {item.client}
         </p>
       )}
@@ -175,7 +177,7 @@ export default function Portfolio() {
             Case studies
           </p>
           <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A]">
-            See how it's made.
+            See how it&apos;s made.
           </h2>
         </motion.div>
 
@@ -189,9 +191,19 @@ export default function Portfolio() {
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
             >
               <Link href={`/case-studies/${cs.slug}`} className="group block">
-                {/* Image */}
+                {/* Image / Video */}
                 <div className="relative overflow-hidden aspect-[4/3] bg-black/5 mb-5">
-                  {cs.image ? (
+                  {cs.video ? (
+                    <video
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    >
+                      <source src={cs.video} type="video/mp4" />
+                    </video>
+                  ) : cs.image ? (
                     <Image
                       src={cs.image}
                       alt={cs.client}

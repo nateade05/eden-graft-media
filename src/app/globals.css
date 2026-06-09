@@ -1,9 +1,32 @@
 @import "tailwindcss";
 
+@theme {
+  /* ── Brand pink (signature) ── */
+  --color-brand-blush:    #FFF0F0;  /* near-white pink tint, bg use */
+  --color-brand-pink:     #FFCCCC;  /* signature salmon pink */
+  --color-brand-rose:     #E8847E;  /* deeper coral-rose */
+  --color-brand-burgundy: #8B3A3A;  /* dark rose anchor */
+
+  /* ── Complement ── */
+  --color-brand-sage:     #A8C0A8;  /* muted sage green */
+  --color-brand-mist:     #8090A8;  /* dusty slate blue-gray */
+
+  /* ── Warm foundation ── */
+  --color-brand-cream:    #F7F6F2;  /* off-white background */
+  --color-brand-sand:     #F5F2ED;  /* warm sand */
+  --color-brand-stone:    #D0CFC8;  /* warm mid-tone stone */
+  --color-brand-gold:     #C9A96E;  /* warm amber-gold */
+  --color-brand-ember:    #C8371A;  /* burnt red */
+
+  /* ── Dark tones ── */
+  --color-brand-dark:     #1A1612;  /* very dark warm brown */
+  --color-brand-ink:      #0A0A0A;  /* near black */
+}
+
 :root {
-  --background: #F7F6F2;
-  --foreground: #0A0A0A;
-  --accent: #C8371A;
+  --background: var(--color-brand-cream);
+  --foreground: var(--color-brand-ink);
+  --accent:     var(--color-brand-ember);
 }
 
 @layer base {

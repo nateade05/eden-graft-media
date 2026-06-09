@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# video source files (encoding inputs — not served, keep locally only)
+public/assets/videos/chars/*.mp4
+public/assets/videos/transitions/*.mp4
