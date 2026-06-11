@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { copy } from "@/content/copy";
 
 type WallItem = {
   id: string;
@@ -14,32 +15,26 @@ type WallItem = {
 };
 
 const items: WallItem[] = [
-  { id: "ck-bird",         type: "video", src: "/assets/wall/ck-bird.mp4",         aspect: "9/16",  client: "Charles & Keith" },
-  { id: "sports-1",        type: "image", src: "/assets/wall/sports-1.jpg",        aspect: "3/4",   client: "ILLVZN" },
-  { id: "cowboy",          type: "video", src: "/assets/wall/cowboy.mp4",          aspect: "4/5",   client: "Don Julio" },
-  { id: "hf-1",            type: "image", src: "/assets/wall/hf-1.jpg",            aspect: "3/4" },
-  { id: "illvzn",          type: "image", src: "/assets/wall/illvzn.jpg",          aspect: "2/3",   client: "ILLVZN" },
-  { id: "ralph",           type: "video", src: "/assets/wall/ralph.mp4",           aspect: "9/16",  client: "Ralph Lauren" },
-  { id: "glitch",          type: "image", src: "/assets/wall/glitch.jpg",          aspect: "2/3" },
-  { id: "ck-summer",       type: "image", src: "/assets/wall/ck-summer.jpg",       aspect: "3/2",   client: "Charles & Keith" },
-  { id: "tobimanny",       type: "video", src: "/assets/wall/tobimanny.mp4",       aspect: "1/1" },
-  { id: "sports-2",        type: "image", src: "/assets/wall/sports-2.jpg",        aspect: "3/4",   client: "ILLVZN" },
-  { id: "hf-2",            type: "image", src: "/assets/wall/hf-2.jpg",            aspect: "3/4" },
-  { id: "don-julio",       type: "video", src: "/assets/wall/don-julio.mp4",       aspect: "4/5",   client: "Don Julio" },
-  { id: "ck-qixi",         type: "image", src: "/assets/wall/ck-qixi.jpg",         aspect: "1/1",   client: "Charles & Keith" },
-  { id: "edit-landscape",  type: "image", src: "/assets/wall/edit-landscape.jpg",  aspect: "3/2" },
-  { id: "ck-calling",      type: "video", src: "/assets/wall/ck-calling.mp4",      aspect: "16/9",  client: "Charles & Keith" },
-  { id: "mockup-purple",   type: "image", src: "/assets/wall/mockup-purple.jpg",   aspect: "4/3" },
-  { id: "sports-3",        type: "image", src: "/assets/wall/sports-3.jpg",        aspect: "3/4",   client: "ILLVZN" },
-  { id: "ck-easter",       type: "video", src: "/assets/wall/ck-easter.mp4",       aspect: "9/16",  client: "Charles & Keith" },
-  { id: "don-julio-bottle",type: "image", src: "/assets/wall/don-julio-bottle.jpg",aspect: "3/4",   client: "Don Julio" },
-  { id: "ck-landscape",    type: "image", src: "/assets/wall/ck-landscape.jpg",    aspect: "3/2",   client: "Charles & Keith" },
-  { id: "look-9b",         type: "image", src: "/assets/wall/look-9b.jpg",         aspect: "3/4" },
-  { id: "cowboy-bottle",   type: "image", src: "/assets/wall/cowboy-bottle.jpg",   aspect: "4/5",   client: "Don Julio" },
-  { id: "ck-2023",         type: "image", src: "/assets/wall/ck-2023.jpg",         aspect: "4/3",   client: "Charles & Keith" },
-  { id: "edit-portrait",   type: "image", src: "/assets/wall/edit-portrait.jpg",   aspect: "2/3" },
-  { id: "ck-winter",       type: "image", src: "/assets/wall/ck-winter.jpg",       aspect: "4/5",   client: "Charles & Keith" },
-  { id: "image-1",         type: "image", src: "/assets/wall/image-1.jpg",         aspect: "3/2" },
+  { id: "ck-bird-ig",       type: "video", src: "/assets/wall/ck-bird-ig.mp4",       aspect: "9/16",  client: "Charles & Keith" },
+  { id: "knicks",           type: "image", src: "/assets/wall/knicks.png",           aspect: "2/3",   client: "ILLVZN" },
+  { id: "ck-easter-26",     type: "video", src: "/assets/wall/ck-easter-26.mp4",     aspect: "9/16",  client: "Charles & Keith" },
+  { id: "oakley-concept",   type: "video", src: "/assets/wall/oakley-concept.mp4",   aspect: "9/16",  client: "Oakley" },
+  { id: "ck-qixi-butter",   type: "image", src: "/assets/wall/ck-qixi-butterflies.jpg", aspect: "1/1", client: "Charles & Keith" },
+  { id: "graft-contact",    type: "image", src: "/assets/wall/graft-contact.png",    aspect: "2/3" },
+  { id: "ck-tropical",      type: "image", src: "/assets/wall/ck-tropical.jpg",      aspect: "4/3",   client: "Charles & Keith" },
+  { id: "spurs",            type: "image", src: "/assets/wall/spurs.png",            aspect: "2/3",   client: "ILLVZN" },
+  { id: "ck-horse-tt",      type: "video", src: "/assets/wall/ck-horse-tt.mp4",      aspect: "9/16",  client: "Charles & Keith" },
+  { id: "sunset-youth",     type: "image", src: "/assets/wall/sunset-youth.png",     aspect: "2/3" },
+  { id: "ck-chihuahua",     type: "video", src: "/assets/wall/ck-chihuahua.mp4",     aspect: "4/5",   client: "Charles & Keith" },
+  { id: "oakley-portrait",  type: "image", src: "/assets/wall/oakley-portrait.png",  aspect: "3/4",   client: "Oakley" },
+  { id: "ck-summer-26",     type: "video", src: "/assets/wall/ck-summer-26.mp4",     aspect: "9/16",  client: "Charles & Keith" },
+  { id: "hf-video",         type: "video", src: "/assets/wall/hf-video.mp4",         aspect: "9/16" },
+  { id: "ck-qixi-bag",      type: "image", src: "/assets/wall/ck-qixi-bag.jpg",      aspect: "3/2",   client: "Charles & Keith" },
+  { id: "netflix-graft",    type: "image", src: "/assets/wall/netflix-graft.png",    aspect: "16/9" },
+  { id: "ck-winter-animal", type: "image", src: "/assets/wall/ck-winter-animal.jpg", aspect: "4/5",   client: "Charles & Keith" },
+  { id: "ef-portrait",      type: "video", src: "/assets/wall/ef-portrait.mp4",      aspect: "3/4" },
+  { id: "ck-polka-bag",     type: "image", src: "/assets/wall/ck-polka-bag.png",     aspect: "9/16",  client: "Charles & Keith" },
+  { id: "tennis",           type: "image", src: "/assets/wall/tennis.png",           aspect: "1/1" },
 ];
 
 type CaseStudy = {
@@ -54,24 +49,24 @@ type CaseStudy = {
 const caseStudies: CaseStudy[] = [
   {
     slug: "beverley-knight",
-    client: "Beverley Knight",
-    title: "Tour Merch & Music Video, Built in AI",
-    description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour — all AI, zero shoot days.",
+    client: copy.portfolio.caseStudies.items[0].client,
+    title: copy.portfolio.caseStudies.items[0].title,
+    description: copy.portfolio.caseStudies.items[0].description,
     image: "/assets/case-studies/beverley-knight/card-still.jpg",
     video: "/assets/case-studies/beverley-knight/card-loop.mp4",
   },
   {
     slug: "charles-keith",
-    client: "Charles & Keith",
-    title: "Runway Campaign, AI-Produced",
-    description: "Seasonal runway campaign stills and motion assets. No shoot, no travel, no compromise.",
+    client: copy.portfolio.caseStudies.items[1].client,
+    title: copy.portfolio.caseStudies.items[1].title,
+    description: copy.portfolio.caseStudies.items[1].description,
     image: "/assets/case-studies/charles-keith/hero.jpg",
   },
   {
     slug: "nike",
-    client: "Nike",
-    title: "A Nike Concept. Built Entirely in AI.",
-    description: "Raw characters, street energy, and a concept film. No cast, no crew, no studio — just a brief and the tools.",
+    client: copy.portfolio.caseStudies.items[2].client,
+    title: copy.portfolio.caseStudies.items[2].title,
+    description: copy.portfolio.caseStudies.items[2].description,
     image: "/assets/case-studies/nike/detail-grill.jpg",
   },
 ];
@@ -144,10 +139,10 @@ export default function Portfolio() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
-            The work
+            {copy.portfolio.overline}
           </p>
           <h2 className="text-[clamp(2.5rem,5vw,4rem)] font-black leading-tight text-[#0A0A0A]">
-            Built to stop the scroll.
+            {copy.portfolio.headline}
           </h2>
         </motion.div>
       </div>
@@ -174,10 +169,10 @@ export default function Portfolio() {
           className="mb-14"
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
-            Case studies
+            {copy.portfolio.caseStudies.overline}
           </p>
           <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A]">
-            See how it&apos;s made.
+            {copy.portfolio.caseStudies.headline}
           </h2>
         </motion.div>
 

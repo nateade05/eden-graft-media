@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { copy } from "@/content/copy";
 
 export default function Footer() {
   return (
@@ -15,11 +16,11 @@ export default function Footer() {
         />
 
         <p className="text-xs text-black/20 text-center tracking-wide">
-          © {new Date().getFullYear()} Graft Media. AI-Led Creative Production Studio
+          © {new Date().getFullYear()} Graft Media. {copy.footer.tagline}
         </p>
 
         <div className="flex items-center gap-6">
-          {["Instagram", "LinkedIn"].map((s) => (
+          {copy.footer.socials.map((s) => (
             <a
               key={s}
               href="#"

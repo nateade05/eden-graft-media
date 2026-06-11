@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -13,6 +14,8 @@ const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
 };
+
+const { stats, brief, direction, looks: looksCopy, stills, film, context, web, cta, hero: heroText } = copy.charlesKeith;
 
 const looks = [
   { src: "look-1.jpg", label: "Look 01" },
@@ -23,31 +26,181 @@ const looks = [
   { src: "look-6.jpg", label: "Look 06" },
 ];
 
-const stats = [
-  { value: "12",  label: "AI-generated looks" },
-  { value: "60+", label: "Campaign stills" },
-  { value: "1",   label: "Hero film" },
-];
+function fmt(s: number) {
+  const m = Math.floor(s / 60);
+  return `${m}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+}
 
 function CampaignVideo() {
   const ref = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const manuallyPaused = useRef(false);
+  const scrubbing = useRef(false);
 
   useEffect(() => {
-    ref.current?.play().catch(() => {});
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !manuallyPaused.current) {
+          el.play().then(() => setPlaying(true)).catch(() => {});
+        } else if (!e.isIntersecting) {
+          el.pause();
+          setPlaying(false);
+        }
+      },
+      { threshold: 0.4 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onTime = () => setCurrentTime(el.currentTime);
+    const onMeta = () => setDuration(el.duration);
+    const onEnded = () => { setPlaying(false); };
+    el.addEventListener("timeupdate", onTime);
+    el.addEventListener("loadedmetadata", onMeta);
+    el.addEventListener("ended", onEnded);
+    return () => {
+      el.removeEventListener("timeupdate", onTime);
+      el.removeEventListener("loadedmetadata", onMeta);
+      el.removeEventListener("ended", onEnded);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
+  }, []);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = muted;
+  }, [muted]);
+
+  const toggle = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (el.paused) {
+      manuallyPaused.current = false;
+      el.play().then(() => setPlaying(true)).catch(() => {});
+    } else {
+      manuallyPaused.current = true;
+      el.pause();
+      setPlaying(false);
+    }
+  }, []);
+
+  const toggleMute = useCallback((e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
+    setMuted(m => !m);
+  }, []);
+
+  const seekTo = useCallback((e: React.PointerEvent) => {
+    const track = trackRef.current;
+    const el = ref.current;
+    if (!track || !el || !el.duration) return;
+    const r = track.getBoundingClientRect();
+    el.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * el.duration;
+  }, []);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    scrubbing.current = true;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    seekTo(e);
+  }, [seekTo]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (scrubbing.current) seekTo(e);
+  }, [seekTo]);
+
+  const onPointerUp = useCallback(() => { scrubbing.current = false; }, []);
+
+  const enterFullscreen = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    containerRef.current?.requestFullscreen?.();
+  }, []);
+
+  const pct = duration ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="relative w-full h-full bg-black">
-      <video
-        ref={ref}
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full h-full"
-      >
+    <div ref={containerRef} className="relative w-full h-full bg-black group cursor-pointer" onClick={toggle}>
+      <video ref={ref} playsInline className="w-full h-full">
         <source src="/assets/case-studies/charles-keith/campaign.mp4" type="video/mp4" />
       </video>
+
+      {/* Centre play/pause hit area */}
+      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}>
+        <div className="w-16 h-16 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center">
+          {playing
+            ? <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><rect x="3" y="2" width="4" height="14" rx="1" /><rect x="11" y="2" width="4" height="14" rx="1" /></svg>
+            : <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><path d="M4 2.5L15 9L4 15.5V2.5Z" /></svg>}
+        </div>
+      </div>
+
+      {/* Bottom control bar */}
+      <div
+        className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-10 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3">
+          <button onClick={toggle} className="flex-shrink-0 text-white/80 hover:text-white transition-colors">
+            {playing
+              ? <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="1" width="4" height="14" rx="1" /><rect x="10" y="1" width="4" height="14" rx="1" /></svg>
+              : <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 1.5L14 8L3 14.5V1.5Z" /></svg>}
+          </button>
+
+          <div
+            ref={trackRef}
+            className="relative flex-1 h-1 bg-white/20 rounded-full cursor-pointer group/track"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+          >
+            <div className="absolute inset-y-0 left-0 bg-white rounded-full" style={{ width: `${pct}%` }} />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 opacity-0 group-hover/track:opacity-100 transition-opacity"
+              style={{ left: `${pct}%` }}
+            />
+          </div>
+
+          <span className="flex-shrink-0 text-[11px] text-white/55 tabular-nums">
+            {fmt(currentTime)}{duration ? ` / ${fmt(duration)}` : ""}
+          </span>
+
+          {/* Mute */}
+          <button onClick={toggleMute} className="flex-shrink-0 text-white/60 hover:text-white transition-colors">
+            {muted ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1 5.5v5h3l4 3V2.5L4 5.5H1z"/>
+                <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M10.5 5.5l4 5M14.5 5.5l-4 5"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1 5.5v5h3l4 3V2.5L4 5.5H1z"/>
+                <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M10 5.5a3.5 3.5 0 0 1 0 5M11.5 3.5a6 6 0 0 1 0 9"/>
+              </svg>
+            )}
+          </button>
+
+          <button onClick={enterFullscreen} className="flex-shrink-0 text-white/60 hover:text-white transition-colors">
+            {isFullscreen
+              ? <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M5 1H1v4M9 1h4v4M5 13H1v-4M9 13h4v-4" /></svg>
+              : <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" /></svg>}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -76,13 +229,13 @@ export default function CharlesKeithCaseStudy() {
           className="absolute bottom-0 left-0 right-0 px-6 md:px-14 pb-14 md:pb-20"
         >
           <p className="text-[10px] tracking-[0.35em] uppercase text-white/45 mb-4 font-semibold">
-            Case study
+            {heroText.overline}
           </p>
           <h1 className="text-[clamp(3rem,9vw,7.5rem)] font-black leading-[0.85] text-white tracking-tighter">
-            Charles & Keith
+            {heroText.headline}
           </h1>
           <p className="mt-5 text-base md:text-lg text-white/55 max-w-lg leading-relaxed">
-            Summer Calling. A fully AI-produced runway campaign for Charles & Keith's SS26 collection.
+            {heroText.subtitle}
           </p>
         </motion.div>
       </section>
@@ -97,12 +250,10 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-6 font-semibold">
-              The brief
+              {brief.overline}
             </p>
             <p className="text-lg md:text-xl leading-relaxed text-black/65 max-w-lg">
-              Charles & Keith needed a full runway campaign for their Summer 2026 collection.
-              Every look AI-generated from the ground up: character, styling, set, and light.
-              No casting. No studio. No shoot days. A complete visual campaign built entirely in AI.
+              {brief.body}
             </p>
           </motion.div>
 
@@ -138,10 +289,10 @@ export default function CharlesKeithCaseStudy() {
             className="mb-12"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
-              01. Direction
+              {direction.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A] max-w-xl">
-              Setting the world.
+              {direction.headline}
             </h2>
           </motion.div>
 
@@ -174,9 +325,7 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
             className="text-sm text-black/40 max-w-xl leading-relaxed"
           >
-            Before generating a single look, we established the world: light quality, set
-            aesthetic, colour palette, and the mood the collection needed to live in.
-            Everything built from a creative direction brief, not a prompt.
+            {direction.body}
           </motion.p>
         </div>
       </section>
@@ -191,10 +340,10 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
-              02. The Looks
+              {looksCopy.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A]">
-              12 looks. No studio.
+              {looksCopy.headline}
             </h2>
           </motion.div>
         </div>
@@ -238,8 +387,7 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
             className="text-sm text-black/40 max-w-xl leading-relaxed"
           >
-            Each look built individually using AI: character generation, outfit application,
-            lighting matching, and final grading. Iterated to match the creative direction exactly.
+            {looksCopy.body}
           </motion.p>
         </div>
       </section>
@@ -254,10 +402,10 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
-              03. Campaign Stills
+              {stills.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A]">
-              Graded and ready.
+              {stills.headline}
             </h2>
           </motion.div>
         </div>
@@ -309,21 +457,16 @@ export default function CharlesKeithCaseStudy() {
             className="flex-1 min-w-0 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 md:order-1"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
-              04. The Film
+              {film.overline}
             </p>
             <h2 className="text-[clamp(2rem,3.5vw,3.2rem)] font-black leading-tight text-[#0A0A0A] mb-8">
-              Summer Calling.
+              {film.headline}
             </h2>
             <p className="text-base text-black/55 leading-relaxed mb-10 max-w-sm">
-              The campaign film. Every frame AI-generated and composited, colour-graded
-              to match the creative direction. Produced for YouTube and paid social placements.
+              {film.body}
             </p>
             <div className="flex flex-col gap-5 border-t border-black/8 pt-8">
-              {[
-                { label: "Format",  value: "1920×1080, 16:9" },
-                { label: "Output",  value: "YouTube, paid social" },
-                { label: "Tools",   value: "Kling AI · Runway · DaVinci Resolve" },
-              ].map((item) => (
+              {film.specs.map((item) => (
                 <div key={item.label} className="flex items-baseline gap-6">
                   <span className="text-[10px] tracking-[0.22em] uppercase text-black/30 font-semibold w-16 flex-shrink-0">
                     {item.label}
@@ -353,10 +496,10 @@ export default function CharlesKeithCaseStudy() {
             className="mb-12"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
-              05. In Context
+              {context.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A]">
-              How it lands.
+              {context.headline}
             </h2>
           </motion.div>
 
@@ -395,10 +538,10 @@ export default function CharlesKeithCaseStudy() {
             className="mb-14"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-4 font-semibold">
-              06. Live on the Web
+              {web.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[#0A0A0A] max-w-2xl">
-              Campaign to website. Same day.
+              {web.headline}
             </h2>
           </motion.div>
 
@@ -453,8 +596,7 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
             className="text-sm text-black/40 max-w-xl leading-relaxed mt-10"
           >
-            The campaign assets went straight from generation into a live Charles & Keith
-            editorial site — desktop and mobile, no reshoots, no resizing.
+            {web.body}
           </motion.p>
         </div>
       </section>
@@ -469,23 +611,23 @@ export default function CharlesKeithCaseStudy() {
             viewport={{ once: true }}
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-semibold">
-              Start your project
+              {cta.overline}
             </p>
             <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-white mb-10">
-              Your campaign.<br className="hidden sm:block" /> Built in AI.
+              {cta.headline}
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/#cta"
                 className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-white text-black hover:bg-white/90 transition-colors duration-300"
               >
-                Start a project
+                {cta.primaryButton}
               </Link>
               <Link
                 href="/case-studies/beverley-knight"
                 className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase border border-white/20 text-white/55 hover:border-white/35 hover:text-white/80 transition-all duration-300"
               >
-                View Beverley Knight
+                {cta.secondaryButton}
               </Link>
             </div>
           </motion.div>

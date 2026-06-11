@@ -4,14 +4,11 @@ import Image from "next/image";
 import { motion, useAnimationFrame } from "framer-motion";
 import { useRef } from "react";
 import { clients } from "@/data/clients";
+import { copy } from "@/content/copy";
 
 const SPEED = 0.045; // px per ms
 
-const stats = [
-  { value: "48h",  label: "Avg. turnaround" },
-  { value: "10×",  label: "Faster than a shoot" },
-  { value: "∞",    label: "Format variations" },
-];
+const { stats } = copy.credibility;
 
 function LogoMarquee() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -96,7 +93,7 @@ export default function CredibilityStrip() {
         className="flex items-center justify-center gap-4 mb-10"
       >
         <span className="w-8 h-px" style={{ background: "var(--accent)", opacity: 0.4 }} />
-        <span className="text-[10px] tracking-[0.3em] uppercase text-white/35">Trusted by</span>
+        <span className="text-[10px] tracking-[0.3em] uppercase text-white/35">{copy.credibility.trustedByLabel}</span>
         <span className="w-8 h-px" style={{ background: "var(--accent)", opacity: 0.4 }} />
       </motion.div>
 

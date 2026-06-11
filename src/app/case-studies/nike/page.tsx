@@ -6,6 +6,7 @@ import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -14,11 +15,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
 };
 
-const stats = [
-  { value: "8",  label: "Character portraits" },
-  { value: "1",  label: "Concept film" },
-  { value: "0",  label: "Shoot days" },
-];
+const { stats, brief, concept, assets, film, banner, cta, hero: heroText } = copy.nike;
 
 const gridImages = [
   "portrait-1.jpg",
@@ -64,13 +61,13 @@ export default function NikeCaseStudy() {
           className="absolute bottom-0 left-0 right-0 px-6 md:px-14 pb-14 md:pb-20"
         >
           <p className="text-[10px] tracking-[0.35em] uppercase text-white/45 mb-4 font-semibold">
-            Case study
+            {heroText.overline}
           </p>
           <h1 className="text-[clamp(3rem,9vw,7.5rem)] font-black leading-[0.85] text-white tracking-tighter">
-            Nike
+            {heroText.headline}
           </h1>
           <p className="mt-5 text-base md:text-lg text-white/55 max-w-lg leading-relaxed">
-            A Nike concept built entirely in AI. Raw characters, street energy, and a short film — no cast, no crew, no studio.
+            {heroText.subtitle}
           </p>
         </motion.div>
       </section>
@@ -80,12 +77,10 @@ export default function NikeCaseStudy() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-semibold">
-              The brief
+              {brief.overline}
             </p>
             <p className="text-lg md:text-xl leading-relaxed text-white/65 max-w-lg">
-              A proof of concept for what Nike campaign production looks like without a single real asset.
-              We built the entire visual world from scratch — characters, environments, a concept film — using AI.
-              No casting. No crew. No studio. Just a brief and the tools.
+              {brief.body}
             </p>
           </motion.div>
 
@@ -109,10 +104,10 @@ export default function NikeCaseStudy() {
         <div className="max-w-7xl mx-auto px-6 mb-12">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-4 font-semibold">
-              01. The Concept
+              {concept.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-white max-w-2xl">
-              Street energy. No street required.
+              {concept.headline}
             </h2>
           </motion.div>
         </div>
@@ -144,16 +139,12 @@ export default function NikeCaseStudy() {
           <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
             className="text-base text-white/55 leading-relaxed"
           >
-            The brief was to show what a Nike campaign looks like when it&apos;s built entirely in AI —
-            not polished CGI, but raw, lived-in energy. Characters that feel like they&apos;ve been
-            somewhere. Imagery with weight to it.
+            {concept.body1}
           </motion.p>
           <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
             className="text-base text-white/55 leading-relaxed"
           >
-            We worked from the brand outwards: the culture, the aesthetic codes, the kind of
-            athlete Nike actually speaks to. Everything generated from that direction — not from
-            a prompt, but from a point of view.
+            {concept.body2}
           </motion.p>
         </div>
       </section>
@@ -163,10 +154,10 @@ export default function NikeCaseStudy() {
         <div className="max-w-7xl mx-auto px-6 mb-12">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-4 font-semibold">
-              02. The Assets
+              {assets.overline}
             </p>
             <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-white">
-              Every image, AI-built.
+              {assets.headline}
             </h2>
           </motion.div>
         </div>
@@ -223,8 +214,7 @@ export default function NikeCaseStudy() {
           <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
             className="text-sm text-white/40 max-w-xl leading-relaxed"
           >
-            Each visual generated to feel unpolished by design. The grain, the lighting, the composition —
-            all calibrated to look like a real shoot that wasn&apos;t supposed to surface. AI that doesn&apos;t look like AI.
+            {assets.body}
           </motion.p>
         </div>
       </section>
@@ -242,20 +232,16 @@ export default function NikeCaseStudy() {
             className="flex-1 min-w-0 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 md:order-1"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-5 font-semibold">
-              03. The Film
+              {film.overline}
             </p>
             <h2 className="text-[clamp(2rem,3.5vw,3.2rem)] font-black leading-tight text-white mb-8">
-              Just Do It. No studio required.
+              {film.headline}
             </h2>
             <p className="text-base text-white/55 leading-relaxed mb-10 max-w-lg">
-              The concept film brings the assets into motion. Produced entirely with AI video tools — no location, no crew, no casting.
+              {film.body}
             </p>
             <div className="flex flex-col gap-5 border-t border-white/8 pt-8 max-w-md">
-              {[
-                { label: "Format", value: "720×1280, 9:16" },
-                { label: "Output", value: "Social, paid, broadcast" },
-                { label: "Tools",  value: "Kling AI · Runway · DaVinci Resolve" },
-              ].map((item) => (
+              {film.specs.map((item) => (
                 <div key={item.label} className="flex items-baseline gap-6">
                   <span className="text-[10px] tracking-[0.22em] uppercase text-white/30 font-semibold w-16 flex-shrink-0">
                     {item.label}
@@ -291,7 +277,7 @@ export default function NikeCaseStudy() {
             viewport={{ once: true }}
             className="text-[clamp(1.1rem,2.8vw,2rem)] font-black text-white/75 tracking-[0.15em] uppercase text-center px-6"
           >
-            Built in AI. Feels like contraband.
+            {banner}
           </motion.p>
         </div>
       </section>
@@ -301,23 +287,23 @@ export default function NikeCaseStudy() {
         <div className="max-w-7xl mx-auto text-center">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-semibold">
-              Start your project
+              {cta.overline}
             </p>
             <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-white mb-10">
-              Brief in. Campaign out.
+              {cta.headline}
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/#cta"
                 className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-white text-black hover:bg-white/90 transition-colors duration-300"
               >
-                Start a project
+                {cta.primaryButton}
               </Link>
               <Link
                 href="/case-studies/beverley-knight"
                 className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase border border-white/20 text-white/55 hover:border-white/35 hover:text-white/80 transition-all duration-300"
               >
-                View Beverley Knight
+                {cta.secondaryButton}
               </Link>
             </div>
           </motion.div>

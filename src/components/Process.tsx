@@ -2,35 +2,11 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-const steps = [
-  {
-    number: "01",
-    title: "Brief",
-    description:
-      "Share your product, campaign goal, and any reference that inspires you. A 30-minute call is enough. No lengthy briefs, no agency decks.",
-  },
-  {
-    number: "02",
-    title: "Concept",
-    description:
-      "We develop the visual direction: mood, aesthetic, and the world your product lives in. You review and sign off before a pixel is produced.",
-  },
-  {
-    number: "03",
-    title: "Production",
-    description:
-      "We generate, composite, and refine every asset using AI tools guided by experienced creative direction. Not prompts and hope. Deliberate craft.",
-  },
-  {
-    number: "04",
-    title: "Delivery",
-    description:
-      "All formats, export-ready. Stills, video, cut-downs, platform sizes. Typically 48–72 hours from sign-off. Unlimited revisions until it's right.",
-  },
-];
+const steps = copy.process.steps;
 
 // SVG viewBox: 0 0 1000 80
 // Wave y alternates between 18 (circle-center height of top-row cards)
@@ -68,10 +44,10 @@ export default function Process() {
           className="mb-12 md:mb-24"
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
-            How it works
+            {copy.process.overline}
           </p>
           <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-[#0A0A0A] max-w-xl">
-            From brief to campaign, in days.
+            {copy.process.headline}
           </h2>
         </motion.div>
 

@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const CHAR_SRC = "/assets/videos/char-cta.mp4";
@@ -140,7 +141,7 @@ export default function FinalCTA() {
           >
             <span className="w-8 h-px bg-[#C8371A] opacity-50" />
             <p className="text-[10px] tracking-[0.3em] uppercase text-[#1A1612]/40">
-              Let&apos;s work together
+              {copy.finalCta.overline}
             </p>
           </motion.div>
 
@@ -149,11 +150,11 @@ export default function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.1, ease }}
-            className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[0.92] tracking-tight text-[#1A1612] mb-8"
+            className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] mb-8"
           >
-            Your next campaign
+            {copy.finalCta.headlineLine1}
             <br />
-            <span className="text-[#1A1612]/20">starts with a brief.</span>
+            <span className="text-[#1A1612]/20">{copy.finalCta.headlineLine2}</span>
           </motion.h2>
 
           <motion.p
@@ -163,8 +164,7 @@ export default function FinalCTA() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-base text-[#1A1612]/45 max-w-sm leading-relaxed mb-12"
           >
-            Tell us about your product, your brand, and what you&apos;re trying to say.
-            We&apos;ll handle the rest.
+            {copy.finalCta.body}
           </motion.p>
 
           <motion.div
@@ -172,24 +172,20 @@ export default function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.45 }}
-            className="flex flex-col sm:flex-row items-start gap-4"
           >
             <motion.a
-              href="mailto:hello@graft.media"
-              className="px-10 py-5 rounded-full text-sm font-bold tracking-widest uppercase bg-[#1A1612] text-white hover:bg-[#1A1612]/85 transition-colors whitespace-nowrap"
-              whileHover={{ scale: 1.03 }}
+              href={`mailto:${copy.finalCta.email}`}
+              className="group relative overflow-hidden inline-flex items-center px-10 py-5 rounded-full text-sm font-bold tracking-widest uppercase text-white whitespace-nowrap bg-[#1A1612]"
+              whileHover={{ scale: 1.03, boxShadow: "0 10px 40px rgba(240,112,90,0.35)" }}
               whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.35, ease }}
             >
-              Start a project
-            </motion.a>
-
-            <motion.a
-              href="mailto:hello@graft.media"
-              className="px-10 py-5 rounded-full text-sm font-semibold tracking-widest uppercase text-[#1A1612]/40 border border-[#1A1612]/12 hover:text-[#1A1612]/65 hover:border-[#1A1612]/25 transition-all whitespace-nowrap"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              hello@graft.media
+              <span
+                className="absolute inset-0 bg-[#F0705A] -translate-x-full group-hover:translate-x-0 transition-transform duration-[560ms]"
+                style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
+                aria-hidden
+              />
+              <span className="relative z-10">{copy.finalCta.primaryCta}</span>
             </motion.a>
           </motion.div>
 
@@ -200,7 +196,7 @@ export default function FinalCTA() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="mt-10 text-xs text-[#1A1612]/30 tracking-wide"
           >
-            Typical delivery 48–72 hours · All formats included · Unlimited revisions
+            {copy.finalCta.footnote}
           </motion.p>
         </div>
       </div>

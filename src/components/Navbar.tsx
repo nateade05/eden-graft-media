@@ -4,11 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { copy } from "@/content/copy";
 
-const links = [
-  { label: "Work", href: "#portfolio" },
-  { label: "Contact", href: "#cta" },
-];
+const links = copy.nav.links;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -140,7 +138,7 @@ export default function Navbar() {
                   : "border-black/20 text-black/55 hover:text-black/85 hover:border-black/35 hover:bg-black/[0.03]"
               }`}
             >
-              Start a project
+              {copy.nav.cta}
             </a>
             <button
               className={`md:hidden p-2 transition-colors duration-500 ${
@@ -187,7 +185,7 @@ export default function Navbar() {
                 transition={{ delay: 0.3 }}
                 className="mt-8 inline-flex justify-center py-4 rounded-full bg-[#0A0A0A] text-white font-bold text-sm tracking-widest uppercase"
               >
-                Start a project
+                {copy.nav.cta}
               </motion.a>
             </nav>
           </motion.div>

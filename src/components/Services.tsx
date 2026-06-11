@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -32,42 +33,26 @@ const CONCEPT_PAIRS: string[][] = [
 
 const phases = [
   {
-    number: "01",
-    phase: "Concepts",
-    description: "The thinking before anything is made: direction, narrative, and the visual world your brand lives in.",
-    deliverables: [
-      "Creative direction",
-      "Brand voice",
-      "Character design",
-      "Visual world-building",
-    ],
+    number: copy.services.phases[0].number,
+    phase: copy.services.phases[0].name,
+    description: copy.services.phases[0].description,
+    deliverables: copy.services.phases[0].deliverables,
     type: "slideshow" as const,
   },
   {
-    number: "02",
-    phase: "Asset Creation",
-    description: "Using AI to generate the raw material: every image, render, and visual building block your campaign needs.",
-    deliverables: [
-      "Character & scene renders",
-      "Campaign stills",
-      "Ecommerce imagery",
-      "Product mockups",
-      "Merch design",
-    ],
+    number: copy.services.phases[1].number,
+    phase: copy.services.phases[1].name,
+    description: copy.services.phases[1].description,
+    deliverables: copy.services.phases[1].deliverables,
     still: "/assets/images/asset-creation-still.jpg",
     video: "/assets/videos/asset-creation-hover.mp4",
     type: "video" as const,
   },
   {
-    number: "03",
-    phase: "Campaign Production",
-    description: "Static assets become motion. We produce the final content that goes live, cut, graded, and ready to perform.",
-    deliverables: [
-      "Short-form video",
-      "Colour grading",
-      "Sound design & SFX",
-      "Format cuts & delivery",
-    ],
+    number: copy.services.phases[2].number,
+    phase: copy.services.phases[2].name,
+    description: copy.services.phases[2].description,
+    deliverables: copy.services.phases[2].deliverables,
     video: "/assets/videos/campaign-production.mp4",
     type: "video-only" as const,
   },
@@ -130,10 +115,10 @@ export default function Services() {
           className="mb-16"
         >
           <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
-            What we do
+            {copy.services.overline}
           </p>
           <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-tight text-[#0A0A0A] max-w-2xl">
-            A full creative production studio. Powered by AI.
+            {copy.services.headline}
           </h2>
         </motion.div>
 
