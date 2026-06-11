@@ -26,14 +26,14 @@ const items: WallItem[] = [
   { id: "ck-horse-tt",      type: "video", src: "/assets/wall/ck-horse-tt.mp4",      aspect: "9/16",  client: "Charles & Keith" },
   { id: "sunset-youth",     type: "image", src: "/assets/wall/sunset-youth.png",     aspect: "2/3" },
   { id: "ck-chihuahua",     type: "video", src: "/assets/wall/ck-chihuahua.mp4",     aspect: "4/5",   client: "Charles & Keith" },
-  { id: "oakley-portrait",  type: "image", src: "/assets/wall/oakley-portrait.png",  aspect: "3/4",   client: "Oakley" },
+  { id: "oakley-portrait",  type: "image", src: "/assets/wall/oakley-portrait.jpg",  aspect: "3/4",   client: "Oakley" },
   { id: "ck-summer-26",     type: "video", src: "/assets/wall/ck-summer-26.mp4",     aspect: "9/16",  client: "Charles & Keith" },
   { id: "hf-video",         type: "video", src: "/assets/wall/hf-video.mp4",         aspect: "9/16" },
   { id: "ck-qixi-bag",      type: "image", src: "/assets/wall/ck-qixi-bag.jpg",      aspect: "3/2",   client: "Charles & Keith" },
   { id: "netflix-graft",    type: "image", src: "/assets/wall/netflix-graft.png",    aspect: "16/9" },
   { id: "ck-winter-animal", type: "image", src: "/assets/wall/ck-winter-animal.jpg", aspect: "4/5",   client: "Charles & Keith" },
   { id: "ef-portrait",      type: "video", src: "/assets/wall/ef-portrait.mp4",      aspect: "3/4" },
-  { id: "ck-polka-bag",     type: "image", src: "/assets/wall/ck-polka-bag.png",     aspect: "9/16",  client: "Charles & Keith" },
+  { id: "ck-polka-bag",     type: "image", src: "/assets/wall/ck-polka-bag.jpg",     aspect: "9/16",  client: "Charles & Keith" },
   { id: "tennis",           type: "image", src: "/assets/wall/tennis.png",           aspect: "1/1" },
 ];
 

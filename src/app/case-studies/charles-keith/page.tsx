@@ -624,7 +624,7 @@ export default function CharlesKeithCaseStudy() {
                 {cta.primaryButton}
               </Link>
               <Link
-                href="/case-studies/beverley-knight"
+                href="/case-studies/nike"
                 className="inline-flex px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase border border-white/20 text-white/55 hover:border-white/35 hover:text-white/80 transition-all duration-300"
               >
                 {cta.secondaryButton}
