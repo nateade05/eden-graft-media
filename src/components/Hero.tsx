@@ -327,21 +327,46 @@ export default function Hero() {
     if (window.matchMedia("(min-width: 768px)").matches) return;
     const canvas = mobileCanvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+
+    // Safari can't blend a canvas via mix-blend-mode when sibling motion elements
+    // create GPU compositor layers. Detect Safari and fall back to luma-key pixel
+    // compositing instead, which doesn't rely on CSS blending at all.
+    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const ctx = canvas.getContext("2d", { willReadFrequently: isSafariBrowser });
     if (!ctx) return;
+    if (isSafariBrowser) canvas.style.mixBlendMode = "normal";
+
     const video = document.createElement("video");
     video.src = "/assets/videos/hero-morph.mp4";
     video.muted = true; video.loop = true; video.playsInline = true; video.load();
-    let raf = 0, started = false;
+    let raf = 0, started = false, lastTime = -1;
+
     const drawLoop = () => {
-      if (video.readyState >= 2) {
+      if (video.readyState >= 2 && video.currentTime !== lastTime) {
+        lastTime = video.currentTime;
         if (canvas.width !== video.videoWidth && video.videoWidth > 0) {
           canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        if (isSafariBrowser) {
+          const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const d = id.data;
+          for (let i = 0; i < d.length; i += 4) {
+            // Luma key: punch out white/near-white background pixels
+            const luma = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
+            if (luma > 240) {
+              d[i + 3] = 0;
+            } else if (luma > 200) {
+              d[i + 3] = Math.round(255 * (240 - luma) / 40);
+            }
+          }
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.putImageData(id, 0, 0);
+        }
       }
       raf = requestAnimationFrame(drawLoop);
     };
+
     const start = () => {
       if (started) return;
       video.play().then(() => { started = true; drawLoop(); }).catch(() => {});
