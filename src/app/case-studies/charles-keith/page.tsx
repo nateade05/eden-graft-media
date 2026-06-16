@@ -59,7 +59,20 @@ function CampaignVideo() {
       { threshold: 0.4 }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    const onUnlock = () => {
+      if (manuallyPaused.current) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) {
+        el.play().then(() => setPlaying(true)).catch(() => {});
+      }
+    };
+    window.addEventListener("videoUnlock", onUnlock, { once: true });
+
+    return () => {
+      obs.disconnect();
+      window.removeEventListener("videoUnlock", onUnlock);
+    };
   }, []);
 
   useEffect(() => {
@@ -140,15 +153,6 @@ function CampaignVideo() {
       <video ref={ref} playsInline poster="/assets/case-studies/charles-keith/still-1.jpg" className="w-full h-full object-contain">
         <source src="/assets/case-studies/charles-keith/campaign.mp4" type="video/mp4" />
       </video>
-
-      {/* Centre play/pause hit area */}
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}>
-        <div className="w-16 h-16 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center">
-          {playing
-            ? <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><rect x="3" y="2" width="4" height="14" rx="1" /><rect x="11" y="2" width="4" height="14" rx="1" /></svg>
-            : <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><path d="M4 2.5L15 9L4 15.5V2.5Z" /></svg>}
-        </div>
-      </div>
 
       {/* Bottom control bar — always visible on mobile, hover-only on desktop */}
       <div

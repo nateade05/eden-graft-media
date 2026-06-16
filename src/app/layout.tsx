@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import VideoUnlock from "@/components/VideoUnlock";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geist.variable} h-full`}>
-      <body className="min-h-full grain-overlay">{children}</body>
+      <body className="min-h-full grain-overlay">
+        <VideoUnlock />
+        {children}
+      </body>
     </html>
   );
 }

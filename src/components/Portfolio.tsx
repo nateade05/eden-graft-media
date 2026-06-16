@@ -84,6 +84,10 @@ function WallVideo({ item }: { item: WallItem }) {
     const el = ref.current;
     if (!el) return;
 
+    // Explicitly set DOM property — React only sets the HTML attribute, which
+    // iOS ignores when deciding whether to allow programmatic play().
+    el.muted = true;
+
     let loaded = false;
 
     // 200px pre-load margin: set src before element enters view
@@ -105,9 +109,20 @@ function WallVideo({ item }: { item: WallItem }) {
       { threshold: 0.1 }
     );
 
+    // On first mobile touch, start playing if this video is in view at that moment
+    const onUnlock = () => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) el.play().catch(() => {});
+    };
+    window.addEventListener("videoUnlock", onUnlock, { once: true });
+
     loadObs.observe(el);
     playObs.observe(el);
-    return () => { loadObs.disconnect(); playObs.disconnect(); };
+    return () => {
+      loadObs.disconnect();
+      playObs.disconnect();
+      window.removeEventListener("videoUnlock", onUnlock);
+    };
   }, [item.src]);
 
   return (
