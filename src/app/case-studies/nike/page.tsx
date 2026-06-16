@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { blurData } from "@/lib/blurData";
 import Link from "next/link";
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -51,6 +52,8 @@ export default function NikeCaseStudy() {
           fill priority loading="eager"
           className="object-cover object-center"
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={blurData["/assets/case-studies/nike/detail-grill.jpg"]}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/85" />
 
@@ -130,6 +133,8 @@ export default function NikeCaseStudy() {
                 fill
                 className="object-cover object-top"
                 sizes="50vw"
+                placeholder="blur"
+                blurDataURL={blurData[`/assets/case-studies/nike/${src}`]}
               />
             </motion.div>
           ))}
@@ -181,6 +186,8 @@ export default function NikeCaseStudy() {
                 fill
                 className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
                 sizes="(max-width: 768px) 33vw, 16vw"
+                placeholder="blur"
+                blurDataURL={blurData[`/assets/case-studies/nike/${src}`]}
               />
             </motion.div>
           ))}
@@ -205,6 +212,8 @@ export default function NikeCaseStudy() {
                 fill
                 className="object-cover object-center"
                 sizes="50vw"
+                placeholder="blur"
+                blurDataURL={blurData[`/assets/case-studies/nike/${src}`]}
               />
             </motion.div>
           ))}
@@ -268,6 +277,8 @@ export default function NikeCaseStudy() {
           fill
           className="object-cover object-center"
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={blurData["/assets/case-studies/nike/swoosh.jpg"]}
         />
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <motion.p

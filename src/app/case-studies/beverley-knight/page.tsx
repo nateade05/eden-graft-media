@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { copy } from "@/content/copy";
+import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -158,7 +159,7 @@ function FilmVideo() {
 
   return (
     <div ref={containerRef} className="relative w-full h-full bg-black group cursor-pointer" onClick={toggle}>
-      <video ref={ref} playsInline className="w-full h-full object-contain">
+      <video ref={ref} playsInline poster="/assets/case-studies/beverley-knight/card-still.jpg" className="w-full h-full object-contain">
         <source src="/assets/case-studies/beverley-knight/film.mp4" type="video/mp4" />
       </video>
 
@@ -171,9 +172,9 @@ function FilmVideo() {
         </div>
       </div>
 
-      {/* Bottom control bar */}
+      {/* Bottom control bar — always visible on mobile, hover-only on desktop */}
       <div
-        className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-10 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-10 bg-gradient-to-t from-black/70 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3">
@@ -194,7 +195,7 @@ function FilmVideo() {
           >
             <div className="absolute inset-y-0 left-0 bg-white rounded-full" style={{ width: `${pct}%` }} />
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 opacity-0 group-hover/track:opacity-100 transition-opacity"
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 opacity-100 lg:opacity-0 lg:group-hover/track:opacity-100 transition-opacity"
               style={{ left: `${pct}%` }}
             />
           </div>
@@ -321,6 +322,8 @@ export default function BeverleyKnightCaseStudy() {
                   fill
                   className={item.src === "merch-1.jpg" ? "object-cover object-top" : "object-contain"}
                   sizes="(max-width: 768px) 50vw, 25vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[`/assets/case-studies/beverley-knight/${item.src}`]}
                 />
               </div>
             </motion.div>
@@ -367,6 +370,8 @@ export default function BeverleyKnightCaseStudy() {
                 fill
                 className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
                 sizes="(max-width: 768px) 50vw, 25vw"
+                placeholder="blur"
+                blurDataURL={blurData[`/assets/case-studies/beverley-knight/${item.src}`]}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">

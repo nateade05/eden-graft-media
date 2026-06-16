@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
+import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -100,6 +101,8 @@ function MaterialCard({ m }: { m: (typeof materials)[0] }) {
           fill
           className="object-contain object-center group-hover:scale-105 transition-transform duration-700 p-4"
           sizes="(max-width: 768px) 100vw, 33vw"
+          placeholder="blur"
+          blurDataURL={blurData[m.image]}
         />
 
         {/* Tag badge */}

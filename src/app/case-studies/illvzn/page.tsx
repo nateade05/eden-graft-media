@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { blurData } from "@/lib/blurData";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -44,6 +45,8 @@ export default function ILLVZNCaseStudy() {
           priority
           className="object-cover object-center"
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={blurData["/assets/case-studies/illvzn/edit-land-1.jpg"]}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
 
@@ -140,6 +143,8 @@ export default function ILLVZNCaseStudy() {
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 33vw, 25vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[`/assets/case-studies/illvzn/concept-${n}.webp`]}
                 />
               </motion.div>
             ))}
@@ -190,6 +195,8 @@ export default function ILLVZNCaseStudy() {
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 50vw, 25vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[`/assets/case-studies/illvzn/${img.src}`]}
                 />
               </div>
             </div>
@@ -286,6 +293,8 @@ export default function ILLVZNCaseStudy() {
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 768px) 100vw, 33vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[`/assets/case-studies/illvzn/photo-${n}.jpg`]}
                 />
               </motion.div>
             ))}
@@ -308,6 +317,8 @@ export default function ILLVZNCaseStudy() {
                   fill
                   className="object-cover"
                   sizes="50vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[`/assets/case-studies/illvzn/mockup-${n}.jpg`]}
                 />
               </motion.div>
             ))}

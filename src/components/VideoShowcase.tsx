@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -69,6 +70,8 @@ export default function VideoShowcase() {
                   fill
                   className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
                   sizes="(max-width: 768px) 100vw, 33vw"
+                  placeholder="blur"
+                  blurDataURL={blurData[item.src]}
                 />
                 {/* Gradient overlay for text legibility */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1a1612]/12 via-transparent to-transparent" />

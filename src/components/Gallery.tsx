@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { blurData } from "@/lib/blurData";
 
 const row1 = [
   { src: "/assets/images/material-circuit.webp", label: "Circuit Board" },
@@ -50,6 +51,8 @@ function GalleryRow({
               fill
               className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
               sizes="256px"
+              placeholder="blur"
+              blurDataURL={blurData[item.src]}
             />
 
             {/* Label strip */}

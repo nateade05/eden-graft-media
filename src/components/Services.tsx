@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { copy } from "@/content/copy";
+import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -95,14 +96,14 @@ export default function Services() {
               {/* Concepts mobile: faint grid texture */}
               {phase.type === "slideshow" && (
                 <div className="absolute inset-0 pointer-events-none">
-                  <Image src={CONCEPT_GRID[0]} alt="" fill className="object-cover" style={{ objectPosition: "center 10%" }} sizes="100vw" aria-hidden />
+                  <Image src={CONCEPT_GRID[0]} alt="" fill className="object-cover" style={{ objectPosition: "center 10%" }} sizes="100vw" aria-hidden placeholder="blur" blurDataURL={blurData[CONCEPT_GRID[0]]} />
                   <div className="absolute inset-0 bg-[#FFF0F0]/82" />
                 </div>
               )}
               {/* Asset Creation mobile: still image */}
               {"still" in phase && (
                 <div className="absolute inset-0 pointer-events-none">
-                  <Image src={(phase as typeof phase & { still: string }).still} alt="" fill className="object-cover object-center" sizes="100vw" aria-hidden />
+                  <Image src={(phase as typeof phase & { still: string }).still} alt="" fill className="object-cover object-center" sizes="100vw" aria-hidden placeholder="blur" blurDataURL={blurData[(phase as typeof phase & { still: string }).still]} />
                   <div className="absolute inset-0 bg-[#FFF0F0]/80" />
                 </div>
               )}
@@ -167,6 +168,8 @@ export default function Services() {
                               style={{ objectPosition: "center 10%" }}
                               sizes="15vw"
                               aria-hidden
+                              placeholder="blur"
+                              blurDataURL={blurData[src]}
                             />
                           </div>
                         ))}
@@ -214,6 +217,8 @@ export default function Services() {
                         className="object-cover object-center"
                         sizes="33vw"
                         aria-hidden
+                        placeholder="blur"
+                        blurDataURL={blurData[(phase as typeof phase & { still: string }).still]}
                       />
                       <div className="absolute inset-0 bg-[#FFF0F0]/82" />
                     </div>

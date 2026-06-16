@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { copy } from "@/content/copy";
+import { blurData } from "@/lib/blurData";
 
 type WallItem = {
   id: string;
@@ -140,6 +141,8 @@ function WallImage({ item }: { item: WallItem }) {
         loading="eager"
         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+        placeholder="blur"
+        blurDataURL={blurData[item.src]}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none" />
       {item.client && (
@@ -230,6 +233,8 @@ export default function Portfolio() {
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       sizes="(max-width: 768px) 100vw, 33vw"
+                      placeholder="blur"
+                      blurDataURL={blurData[cs.image]}
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-end p-6 bg-gradient-to-br from-black/8 to-black/20">

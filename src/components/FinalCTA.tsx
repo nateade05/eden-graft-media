@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { copy } from "@/content/copy";
+import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -135,7 +137,31 @@ export default function FinalCTA() {
         style={{ objectPosition: "60% top" }}
       />
 
-      {/* Left gradient keeps text legible */}
+      {/* Character still — mobile only, faded for text legibility */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, delay: 0.1 }}
+        className="absolute inset-0 pointer-events-none lg:hidden"
+      >
+        <Image
+          src="/assets/images/cta-character.jpg"
+          alt=""
+          fill
+          className="object-cover object-[65%_top] select-none"
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL={blurData["/assets/images/cta-character.jpg"]}
+        />
+        {/* Fade overlay so text stays readable */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(240,240,240,0.55) 0%, rgba(240,240,240,0.4) 40%, rgba(240,240,240,0.7) 80%, #f0f0f0 100%)" }}
+        />
+      </motion.div>
+
+      {/* Left gradient keeps text legible — desktop */}
       <div
         className="absolute inset-y-0 left-0 w-[55%] pointer-events-none hidden lg:block z-[1]"
         style={{ background: "linear-gradient(to right, #f0f0f0 45%, transparent 100%)" }}
