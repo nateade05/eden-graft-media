@@ -199,10 +199,10 @@ export default function ILLVZNCaseStudy() {
 
       {/* ── 03 Motion ── */}
       <section className="border-t border-black/6 overflow-hidden">
-        <div className="flex flex-col md:flex-row md:min-h-[75vh]">
+        <div className="flex flex-col lg:flex-row lg:min-h-[75vh]">
 
           {/* Video — full height left column */}
-          <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-black overflow-hidden">
+          <div className="relative w-full lg:w-1/2 aspect-square lg:aspect-auto bg-black overflow-hidden">
             <video
               autoPlay
               muted
@@ -220,7 +220,7 @@ export default function ILLVZNCaseStudy() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24"
+            className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
               03. Motion

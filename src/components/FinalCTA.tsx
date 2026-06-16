@@ -1,81 +1,95 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { copy } from "@/content/copy";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
-const CHAR_SRC = "/assets/videos/char-cta.mp4";
 
-// Standard arrow cursor shape at 3× (48 px). Hotspot = tip at 3,3.
+const VIDEO_URL =
+  "https://d2ol7oe51mr4n9.cloudfront.net/user_2yiYkl8oAdOhUSD2s94hh9bw3Zt/68dbdb37-90bc-4cf0-b26e-95ff96b1ab73.mp4";
+
+const SERVICE_OPTIONS = ["Brand", "Digital", "Campaign", "Other"] as const;
+
+const SERVICE_STYLES: Record<string, { color: string; shadow: string }> = {
+  Brand:    { color: "#D2647F", shadow: "rgba(210,100,127,0.3)" },
+  Digital:  { color: "#8090A8", shadow: "rgba(128,144,168,0.3)" },
+  Campaign: { color: "#C9A96E", shadow: "rgba(201,169,110,0.3)" },
+  Other:    { color: "#C8371A", shadow: "rgba(200,55,26,0.3)"   },
+};
+
 const BIG_CURSOR =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M 3 3 L 3 36 L 12 27 L 21 42 L 27 39 L 15 21 L 24 21 Z' fill='black' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E\") 3 3, auto";
 
-export default function FinalCTA() {
-  const ref = useRef<HTMLElement>(null);
-  const vidRef = useRef<HTMLVideoElement>(null);
+function useTypewriter(text: string, speed = 38, startDelay = 300) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const [triggered, setTriggered] = useState(false);
 
-  // ── Sample the video's corner pixel → match section bg ──
+  const trigger = useCallback(() => setTriggered(true), []);
+
   useEffect(() => {
-    const video = vidRef.current;
-    const section = ref.current;
-    if (!video || !section) return;
-    const sample = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = 4;
-        canvas.height = 4;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        ctx.drawImage(video, 0, 0, 4, 4);
-        const d = ctx.getImageData(0, 0, 1, 1).data;
-        const colour = `rgb(${d[0]},${d[1]},${d[2]})`;
-        section.style.backgroundColor = colour;
-        section.style.setProperty("--bg", colour);
-      } catch {
-        section.style.backgroundColor = "#f0f0f0";
-        section.style.setProperty("--bg", "#f0f0f0");
-      }
-    };
-    if (video.readyState >= 2) sample();
-    else video.addEventListener("loadeddata", sample, { once: true });
-  }, []);
+    if (!triggered) return;
+    setDisplayed("");
+    setDone(false);
+    let interval: ReturnType<typeof setInterval>;
+    const timeout = setTimeout(() => {
+      let i = 0;
+      interval = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) { clearInterval(interval); setDone(true); }
+      }, speed);
+    }, startDelay);
+    return () => { clearTimeout(timeout); clearInterval(interval); };
+  }, [text, speed, startDelay, triggered]);
 
-  // ── Desktop: scrub video with mouse X delta ──
+  return { displayed, done, trigger };
+}
+
+export default function FinalCTA() {
+  const ref    = useRef<HTMLElement>(null);
+  const vidRef = useRef<HTMLVideoElement>(null);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+
+  const typewriterText = `${copy.finalCta.headlineLine1}\n${copy.finalCta.headlineLine2}`;
+  const { displayed, done, trigger } = useTypewriter(typewriterText);
+
+  // Fire typewriter when section enters view
+  useEffect(() => {
+    const section = ref.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { trigger(); observer.disconnect(); } },
+      { threshold: 0.25 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [trigger]);
+
+  // Desktop: scrub video with horizontal mouse delta
   useEffect(() => {
     const video = vidRef.current;
     if (!video) return;
-
     let prevX = -1;
     let targetTime = 0;
     let seeking = false;
-
     const onSeeked = () => {
       seeking = false;
       if (!video.duration) return;
       if (Math.abs(targetTime - video.currentTime) > 0.01) {
-        seeking = true;
-        video.currentTime = targetTime;
+        seeking = true; video.currentTime = targetTime;
       }
     };
-
     const onMouseMove = (e: MouseEvent) => {
-      if (window.innerWidth < 1024) return;
-      if (!video.duration) return;
+      if (window.innerWidth < 1024 || !video.duration) return;
       if (prevX === -1) { prevX = e.clientX; return; }
-
       const delta = e.clientX - prevX;
       prevX = e.clientX;
-
-      targetTime += (delta / window.innerWidth) * 1.0 * video.duration;
+      targetTime += (delta / window.innerWidth) * video.duration;
       targetTime = Math.max(0, Math.min(video.duration, targetTime));
-
-      if (!seeking) {
-        seeking = true;
-        video.currentTime = targetTime;
-      }
+      if (!seeking) { seeking = true; video.currentTime = targetTime; }
     };
-
     video.addEventListener("seeked", onSeeked);
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     return () => {
@@ -84,7 +98,7 @@ export default function FinalCTA() {
     };
   }, []);
 
-  // ── Mobile: autoplay ──
+  // Mobile: autoplay
   useEffect(() => {
     const video = vidRef.current;
     if (!video || window.innerWidth >= 1024) return;
@@ -92,23 +106,24 @@ export default function FinalCTA() {
     video.play().catch(() => {});
   }, []);
 
+  const toggleService = (service: string) =>
+    setSelectedServices(prev =>
+      prev.includes(service) ? prev.filter(s => s !== service) : [...prev, service]
+    );
+
+  const mailtoHref = `mailto:${copy.finalCta.email}?subject=${encodeURIComponent(`Project enquiry: ${selectedServices.join(", ")}`)}`;
+
   return (
     <section
       id="cta"
       ref={ref}
       className="relative overflow-hidden"
-      style={{
-        minHeight: "92vh",
-        backgroundColor: "#f0f0f0",
-        "--bg": "#f0f0f0",
-        cursor: BIG_CURSOR,
-      } as React.CSSProperties}
+      style={{ minHeight: "92vh", backgroundColor: "#f0f0f0", cursor: BIG_CURSOR } as React.CSSProperties}
     >
-      {/* Character — the section itself, full bleed */}
+      {/* Character video — right side, desktop only */}
       <motion.video
         ref={vidRef}
-        src={CHAR_SRC}
-        crossOrigin="anonymous"
+        src={VIDEO_URL}
         muted
         playsInline
         preload="auto"
@@ -120,18 +135,17 @@ export default function FinalCTA() {
         style={{ objectPosition: "60% top" }}
       />
 
-      {/* Left gradient — keeps text legible as character turns into frame */}
+      {/* Left gradient keeps text legible */}
       <div
         className="absolute inset-y-0 left-0 w-[55%] pointer-events-none hidden lg:block z-[1]"
-        style={{
-          background: "linear-gradient(to right, var(--bg) 45%, transparent 100%)",
-        }}
+        style={{ background: "linear-gradient(to right, #f0f0f0 45%, transparent 100%)" }}
       />
 
-      {/* Text — overlaid left side, no max-w wrapper */}
+      {/* Content */}
       <div className="relative z-10 flex items-center min-h-[92vh] px-8 md:px-14 xl:px-20 py-24">
         <div className="max-w-[560px]">
 
+          {/* Overline */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -145,36 +159,88 @@ export default function FinalCTA() {
             </p>
           </motion.div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.1, ease }}
-            className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] mb-8"
-          >
-            {copy.finalCta.headlineLine1}
-            <br />
-            <span className="text-[#1A1612]/20">{copy.finalCta.headlineLine2}</span>
-          </motion.h2>
+          {/* Headline — typewriter */}
+          <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] mb-8 whitespace-pre-wrap select-none">
+            {displayed}
+            {!done && (
+              <span className="inline-block w-[3px] h-[0.85em] bg-[#1A1612] align-middle ml-[2px] animate-blink" />
+            )}
+          </h2>
 
+          {/* Body */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-base text-[#1A1612]/45 max-w-sm leading-relaxed mb-12"
+            className="text-base text-[#1A1612]/45 max-w-sm leading-relaxed mb-10"
           >
             {copy.finalCta.body}
           </motion.p>
 
+          {/* Service pills */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.45 }}
           >
+            <div className="flex items-baseline gap-3 mb-4">
+              <p className="text-[11px] tracking-[0.22em] uppercase font-semibold text-[#1A1612]/35">
+                What do you need?
+              </p>
+              <p className="text-[11px] text-[#1A1612]/25">Select all that apply</p>
+            </div>
+
+            <div className="flex flex-wrap gap-2.5 mb-8">
+              {SERVICE_OPTIONS.map(service => {
+                const active = selectedServices.includes(service);
+                const { color, shadow } = SERVICE_STYLES[service];
+                return (
+                  <motion.button
+                    key={service}
+                    onClick={() => toggleService(service)}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-200"
+                    style={active ? {
+                      backgroundColor: color,
+                      color: "white",
+                      border: `1px solid ${color}`,
+                      boxShadow: `0 6px 24px ${shadow}`,
+                      opacity: 1,
+                    } : {
+                      backgroundColor: color,
+                      color: "white",
+                      border: `1px solid ${color}`,
+                      opacity: 0.45,
+                    }}
+                    onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.opacity = "0.7"; }}
+                    onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.opacity = "0.45"; }}
+                  >
+                    <AnimatePresence mode="wait">
+                      {active && (
+                        <motion.span
+                          key="check"
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
+                          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                            <polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                    {service}
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* CTA — always active */}
             <motion.a
-              href={`mailto:${copy.finalCta.email}`}
+              href={mailtoHref}
               className="group relative overflow-hidden inline-flex items-center px-10 py-5 rounded-full text-sm font-bold tracking-widest uppercase text-white whitespace-nowrap bg-[#1A1612]"
               whileHover={{ scale: 1.03, boxShadow: "0 10px 40px rgba(240,112,90,0.35)" }}
               whileTap={{ scale: 0.97 }}
@@ -189,6 +255,7 @@ export default function FinalCTA() {
             </motion.a>
           </motion.div>
 
+          {/* Footnote */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -198,6 +265,7 @@ export default function FinalCTA() {
           >
             {copy.finalCta.footnote}
           </motion.p>
+
         </div>
       </div>
     </section>

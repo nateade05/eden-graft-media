@@ -45,9 +45,15 @@ export default function Hero() {
   const videoDivRef     = useRef<HTMLDivElement>(null);
   const videoExtRef     = useRef<string>(".webm");
 
-  const [clickable, setClickable]       = useState(false);
-  const [hovering, setHovering]         = useState(false);
-  const [transforming, setTransforming] = useState(false);
+  const [clickable, setClickable]           = useState(false);
+  const [hovering, setHovering]             = useState(false);
+  const [transforming, setTransforming]     = useState(false);
+  const [isSafari, setIsSafari]             = useState(false);
+  const barDivRef                           = useRef<HTMLDivElement>(null);
+  const transformBarRafRef                  = useRef(0);
+  const clickTimeRef                        = useRef(0);
+  const transitionStartRef                  = useRef<number | null>(null);
+  const predictedTransMsRef                 = useRef(4000);
   const [cursorPos, setCursorPos]       = useState({ x: 0, y: 0 });
   const [inCharZone, setInCharZone]     = useState(false);
 
@@ -133,7 +139,52 @@ export default function Hero() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
+  // ── Transform bar — two-phase: creeps from click, locks to video at transition ─
+  useEffect(() => {
+    if (!transforming) {
+      cancelAnimationFrame(transformBarRafRef.current);
+      if (barDivRef.current) barDivRef.current.style.width = "0%";
+      return;
+    }
+    const tick = () => {
+      const now = performance.now();
+      let t: number;
+      if (transitionStartRef.current !== null) {
+        if (phaseRef.current === "trans") {
+          // Transition video playing — drive from its currentTime
+          const vid = activeRef.current === "a" ? vidARef.current : vidBRef.current;
+          if (vid && isFinite(vid.duration) && vid.duration > 0) {
+            const preMs = transitionStartRef.current - clickTimeRef.current;
+            const totalMs = preMs + vid.duration * 1000;
+            t = Math.min((preMs + vid.currentTime * 1000) / totalMs, 1);
+          } else {
+            t = 1;
+          }
+        } else {
+          t = 1; // transition ended, pin to full
+        }
+      } else {
+        // Pre-transition: elapsed / (elapsed + predicted T_trans) — creeps naturally
+        const elapsedMs = now - clickTimeRef.current;
+        t = elapsedMs / (elapsedMs + predictedTransMsRef.current);
+      }
+      if (barDivRef.current) barDivRef.current.style.width = (Math.pow(t, 2.5) * 100) + "%";
+      transformBarRafRef.current = requestAnimationFrame(tick);
+    };
+    transformBarRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(transformBarRafRef.current);
+  }, [transforming]);
+
+  // ── Detect Safari early so JSX renders the correct branch before video setup ──
+  useEffect(() => {
+    const safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    videoExtRef.current = safari ? ".mp4" : ".webm";
+    setIsSafari(safari);
+  }, []);
+
   // ── Double-buffer video state machine ─────────────────────────────────────────
+  // Depends on isSafari so it runs AFTER the correct JSX branch is in the DOM,
+  // ensuring vidARef/vidBRef point to the right video elements.
   useEffect(() => {
     if (!window.matchMedia("(min-width: 768px)").matches) return;
     const vidA = vidARef.current;
@@ -143,31 +194,35 @@ export default function Hero() {
     const activeVid   = () => activeRef.current === "a" ? vidA : vidB;
     const inactiveVid = () => activeRef.current === "a" ? vidB : vidA;
 
-    videoExtRef.current = ".webm";
-    const v = (path: string) => path + ".webm";
+    const v = (path: string) => path + videoExtRef.current;
+
+    const isMp4 = videoExtRef.current === ".mp4";
 
     function preload(vid: HTMLVideoElement, src: string) {
       vid.playbackRate = 1; vid.src = v(src); vid.loop = false; vid.preload = "auto"; vid.load();
-      // Pre-warm GPU: wait for canplay (real decoded frames exist) then play exactly one
-      // rVFC and park. This puts luminance + alpha into the GPU compositor so playAndCommit
-      // can swap without triggering the VP9 alpha-plane decode stall.
-      // Note: no currentTime=0 seek after pause — that flushes the GPU texture cache.
-      const warm = () => {
-        vid.play().then(() => {
-          if ("requestVideoFrameCallback" in (vid as any)) {
-            (vid as any).requestVideoFrameCallback(() => vid.pause());
-          } else {
-            requestAnimationFrame(() => vid.pause());
-          }
-        }).catch(() => {});
-      };
-      vid.addEventListener("canplay", warm, { once: true });
+      if (!isMp4) {
+        // GPU pre-warm for VP9 alpha (webm only): play one rVFC frame then park so the
+        // alpha plane is in the compositor before playAndCommit swaps.
+        const warm = () => {
+          vid.play().then(() => {
+            if ("requestVideoFrameCallback" in (vid as any)) {
+              (vid as any).requestVideoFrameCallback(() => vid.pause());
+            } else {
+              requestAnimationFrame(() => vid.pause());
+            }
+          }).catch(() => {});
+        };
+        vid.addEventListener("canplay", warm, { once: true });
+      }
     }
 
     function playAndCommit(from: HTMLVideoElement, to: HTMLVideoElement, onCommit: () => void) {
       to.play().catch(() => {});
       const commit = () => { from.style.opacity = "0"; to.style.opacity = "1"; onCommit(); };
-      if ("requestVideoFrameCallback" in to) {
+      if (isMp4) {
+        // Plain MP4 — no alpha plane to sync, single rAF is enough
+        requestAnimationFrame(commit);
+      } else if ("requestVideoFrameCallback" in to) {
         // 3 frames: luminance ready on frame 1, alpha synced by frame 2, frame 3 is the safety
         (to as any).requestVideoFrameCallback(() => {
           (to as any).requestVideoFrameCallback(() => {
@@ -191,6 +246,7 @@ export default function Hero() {
           pendingRef.current = false; phaseRef.current = "trans";
           const from = this; const to = inactiveVid();
           activeRef.current = activeRef.current === "a" ? "b" : "a";
+          transitionStartRef.current = performance.now();
           playAndCommit(from, to, () => {
             from.playbackRate = 1;
             const nextIdx = (idxRef.current + 1) % CYCLE.length;
@@ -222,7 +278,8 @@ export default function Hero() {
       vidB.removeEventListener("ended", handleEnded);
       vidA.pause(); vidB.pause();
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSafari]);
 
   // ── Click handler ─────────────────────────────────────────────────────────────
   const handleVideoClick = useCallback(() => {
@@ -231,10 +288,14 @@ export default function Hero() {
     const act  = activeRef.current === "a" ? vidARef.current : vidBRef.current;
     const inact = activeRef.current === "a" ? vidBRef.current : vidARef.current;
     if (act) {
-      act.loop = false; setTransforming(true);
+      act.loop = false;
       const remaining = act.duration > 0 ? act.duration - act.currentTime : 1;
       const T_trans   = inact && inact.duration > 0 && isFinite(inact.duration) ? inact.duration : 4;
       const T = remaining + T_trans;
+      clickTimeRef.current = performance.now();
+      transitionStartRef.current = null;
+      predictedTransMsRef.current = T_trans * 1000;
+      setTransforming(true);
       const A = 0.6 * Math.min(1, remaining / 1.5);
       const clickTime = performance.now();
       const rampTick = () => {
@@ -315,74 +376,105 @@ export default function Hero() {
     >
     <div className="sticky top-0 h-screen overflow-hidden bg-[#F7F6F2] flex items-center justify-center">
 
-      {/* Step 0: "Brief in." — behind character */}
-      <AnimatePresence>
-        {step === 0 && (
-          <motion.div
-            key="intro-behind"
-            className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none select-none"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -40 }}
-            transition={{ duration: 0.9, ease }}
-          >
-            <h1 className="text-[clamp(3rem,9vw,8rem)] font-black leading-[0.88] tracking-tighter text-center px-4">
-              <span className="block text-black/10">{copy.hero.headlineLine1}</span>
-              <span className="block text-transparent select-none">{copy.hero.headlineLine2}</span>
-            </h1>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* CHARACTER */}
-      <div className="relative z-10 flex-shrink-0 flex items-center justify-center" style={{ perspective: "1200px" }}>
-        <motion.div
-          animate={{ x: CHAR_X[step], scale: 1, opacity: 1 }}
-          initial={{ scale: 0.9, opacity: 0 }}
-          style={{ rotateY: charRotateY, rotateX: charRotateX }}
-          transition={{
-            x:       { type: "spring", stiffness: 50, damping: 22 },
-            scale:   { duration: 1.2, ease },
-            opacity: { duration: 1.0, ease },
-          }}
-        >
+      {isSafari ? (
+        <>
+          {/* Safari: full-bleed raw video, all text in front */}
           <div
-            ref={videoDivRef}
-            className="relative h-[78vh]"
-            style={{ aspectRatio: "1928 / 1072", cursor: clickable ? "none" : "default", clipPath: "inset(0 18% 0 18%)" }}
+            className="absolute inset-0 z-10"
+            style={{ cursor: clickable ? "none" : "default" }}
             onClick={handleVideoClick}
-            onMouseMove={(e) => {
-              setCursorPos({ x: e.clientX, y: e.clientY });
-              const r = videoDivRef.current?.getBoundingClientRect();
-              if (r) setInCharZone((e.clientX - r.left) / r.width >= 0.22 && (e.clientX - r.left) / r.width <= 0.78);
-            }}
             onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => { setHovering(false); setInCharZone(false); }}
+            onMouseLeave={() => setHovering(false)}
           >
-            <video ref={vidARef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 1 }} />
-            <video ref={vidBRef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 0 }} />
+            <video ref={vidARef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 1 }} />
+            <video ref={vidBRef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 0 }} />
           </div>
-        </motion.div>
-      </div>
-
-      {/* Step 0: "Campaign out." — in front of character */}
-      <AnimatePresence>
-        {step === 0 && (
-          <motion.div
-            key="intro-front"
-            className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none select-none"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -40 }}
-            transition={{ duration: 0.9, ease }}
-          >
-            <h1 className="text-[clamp(3rem,9vw,8rem)] font-black leading-[0.88] tracking-tighter text-center px-4">
-              <span className="block text-transparent select-none">{copy.hero.headlineLine1}</span>
-              <span className="block text-[#0A0A0A]">{copy.hero.headlineLine2}</span>
-            </h1>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <AnimatePresence>
+            {step === 0 && (
+              <motion.div
+                key="intro-text"
+                className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none select-none"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.9, ease }}
+              >
+                <h1 className="text-[clamp(3rem,9vw,8rem)] font-black leading-[0.88] tracking-tighter text-center px-4">
+                  <span className="block text-[#0A0A0A]">{copy.hero.headlineLine1}</span>
+                  <span className="block text-black/20">{copy.hero.headlineLine2}</span>
+                </h1>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      ) : (
+        <>
+          {/* Non-Safari: original depth-split with alpha webm */}
+          <AnimatePresence>
+            {step === 0 && (
+              <motion.div
+                key="intro-behind"
+                className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none select-none"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.9, ease }}
+              >
+                <h1 className="text-[clamp(3rem,9vw,8rem)] font-black leading-[0.88] tracking-tighter text-center px-4">
+                  <span className="block text-black/10">{copy.hero.headlineLine1}</span>
+                  <span className="block text-transparent select-none">{copy.hero.headlineLine2}</span>
+                </h1>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="relative z-10 flex-shrink-0 flex items-center justify-center" style={{ perspective: "1200px" }}>
+            <motion.div
+              animate={{ x: CHAR_X[step], scale: 1, opacity: 1 }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              style={{ rotateY: charRotateY, rotateX: charRotateX }}
+              transition={{
+                x:       { type: "spring", stiffness: 50, damping: 22 },
+                scale:   { duration: 1.2, ease },
+                opacity: { duration: 1.0, ease },
+              }}
+            >
+              <div
+                ref={videoDivRef}
+                className="relative h-[78vh]"
+                style={{ aspectRatio: "1928 / 1072", cursor: clickable ? "none" : "default", clipPath: "inset(0 18% 0 18%)" }}
+                onClick={handleVideoClick}
+                onMouseMove={(e) => {
+                  setCursorPos({ x: e.clientX, y: e.clientY });
+                  const r = videoDivRef.current?.getBoundingClientRect();
+                  if (r) setInCharZone((e.clientX - r.left) / r.width >= 0.22 && (e.clientX - r.left) / r.width <= 0.78);
+                }}
+                onMouseEnter={() => setHovering(true)}
+                onMouseLeave={() => { setHovering(false); setInCharZone(false); }}
+              >
+                <video ref={vidARef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 1 }} />
+                <video ref={vidBRef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 0 }} />
+              </div>
+            </motion.div>
+          </div>
+          <AnimatePresence>
+            {step === 0 && (
+              <motion.div
+                key="intro-front"
+                className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none select-none"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.9, ease }}
+              >
+                <h1 className="text-[clamp(3rem,9vw,8rem)] font-black leading-[0.88] tracking-tighter text-center px-4">
+                  <span className="block text-transparent select-none">{copy.hero.headlineLine1}</span>
+                  <span className="block text-[#0A0A0A]">{copy.hero.headlineLine2}</span>
+                </h1>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
 
       {/* Step 0: subtitle + scroll indicator */}
       <AnimatePresence>
@@ -463,71 +555,58 @@ export default function Hero() {
         )}
       </AnimatePresence>
 
-      {/* Transform tooltip */}
+      {/* Transform cursor / loader */}
       <AnimatePresence>
-        {clickable && hovering && inCharZone && (
+        {clickable && hovering && (isSafari || inCharZone) && (
           <motion.div
             key="pill"
-            className="pointer-events-none select-none"
-            style={{ position: "fixed", left: cursorPos.x, top: cursorPos.y - 64, transform: "translateX(-50%)", zIndex: 50 }}
+            className="pointer-events-none select-none flex flex-col items-center"
+            style={{ position: "fixed", left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, -50%)", zIndex: 50 }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
           >
             <motion.div
-              layoutId="transform-bubble"
-              className="rounded-full"
-              style={{ backgroundColor: "#F0705A", boxShadow: "0 10px 36px rgba(240,112,90,0.5), 0 2px 10px rgba(240,112,90,0.25)" }}
-              transition={{ type: "spring", stiffness: 300, damping: 26 }}
+              animate={{ scale: [1, 1.08, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-                className="flex items-center gap-3 px-7 py-3.5"
-              >
-                <span className="text-[11px] tracking-[0.3em] uppercase text-white font-bold whitespace-nowrap">Transform</span>
-                <motion.span
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.45, 1, 0.45] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                  className="block w-1.5 h-1.5 rounded-full flex-shrink-0 bg-white"
-                />
-              </motion.div>
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+                <circle cx="19" cy="19" r="17" stroke="#D2647F" strokeWidth="1" opacity="0.5" />
+                <circle cx="19" cy="19" r="2" fill="#D2647F" />
+                <line x1="19" y1="3" x2="19" y2="10" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
+                <line x1="19" y1="28" x2="19" y2="35" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
+                <line x1="3" y1="19" x2="10" y2="19" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
+                <line x1="28" y1="19" x2="35" y2="19" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
+              </svg>
             </motion.div>
+            <span style={{ fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#D2647F", opacity: 0.85, marginTop: "6px", whiteSpace: "nowrap" }}>Transform</span>
           </motion.div>
         )}
         {transforming && (
           <motion.div
             key="loader"
-            className="pointer-events-none select-none flex flex-col items-center gap-2.5"
-            style={{ position: "fixed", left: cursorPos.x, top: cursorPos.y - 72, transform: "translateX(-50%)", zIndex: 50 }}
+            className="pointer-events-none select-none flex flex-col items-center"
+            style={{ position: "fixed", left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, -50%)", zIndex: 50, gap: "24px" }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <div className="relative">
-              <motion.div className="absolute inset-0 rounded-full" style={{ border: "1px solid #F0705A" }}
-                animate={{ scale: [1, 1.9], opacity: [0.4, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut", delay: 0 }} />
-              <motion.div className="absolute inset-0 rounded-full" style={{ border: "1px solid #F0705A" }}
-                animate={{ scale: [1, 1.9], opacity: [0.4, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut", delay: 1.1 }} />
-              <motion.div
-                layoutId="transform-bubble"
-                className="rounded-full overflow-hidden flex items-center justify-center"
-                style={{ width: 80, height: 80, backgroundColor: "#F0705A" }}
-                transition={{ type: "spring", stiffness: 300, damping: 26 }}
-              >
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                  <circle cx="32" cy="32" r="26" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="none" />
-                  <motion.circle cx="32" cy="32" r="26" stroke="white" strokeWidth="2.5" strokeLinecap="round"
-                    strokeDasharray="41 122" animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-                    style={{ transformOrigin: "32px 32px" }} />
-                  <motion.circle cx="32" cy="32" r="15" stroke="white" strokeWidth="1.5" strokeLinecap="round"
-                    strokeDasharray="15 79" opacity={0.4} animate={{ rotate: -360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    style={{ transformOrigin: "32px 32px" }} />
-                  <motion.circle cx="32" cy="32" r="2.5" fill="white"
-                    animate={{ scale: [1, 1.6, 1], opacity: [0.45, 1, 0.45] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ transformOrigin: "32px 32px" }} />
-                </svg>
-              </motion.div>
+            <div style={{ width: 180, height: 2, background: "rgba(210,100,127,0.15)", borderRadius: 999, overflow: "hidden" }}>
+              <div
+                ref={barDivRef}
+                style={{ height: "100%", background: "#D2647F", borderRadius: 999, width: "0%" }}
+              />
             </div>
-            <span className="text-[8px] tracking-[0.4em] uppercase font-semibold" style={{ color: "#F0705A", opacity: 0.7 }}>Transforming</span>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {["T","R","A","N","S","F","O","R","M","I","N","G"].map((letter, i) => (
+                <motion.span
+                  key={i}
+                  animate={{ opacity: [0.18, 1, 0.18] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.09 }}
+                  style={{ fontSize: "10px", letterSpacing: "0.28em", textTransform: "uppercase", color: "#D2647F", display: "inline-block" }}
+                >
+                  {letter}
+                </motion.span>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

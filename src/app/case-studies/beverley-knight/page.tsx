@@ -387,14 +387,14 @@ export default function BeverleyKnightCaseStudy() {
 
       {/* ── 03 The Film ── */}
       <section className="border-b border-white/6 overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-stretch">
+        <div className="flex flex-col lg:flex-row lg:items-center">
 
           <motion.div
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex-1 min-w-0 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 md:order-1"
+            className="flex-1 min-w-[260px] flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 lg:order-1"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-5 font-semibold">
               {film.overline}
@@ -417,7 +417,7 @@ export default function BeverleyKnightCaseStudy() {
             </div>
           </motion.div>
 
-          <div className="w-full aspect-video md:h-[70vh] md:w-auto md:flex-shrink-0 order-1 md:order-2">
+          <div className="w-full aspect-video lg:w-[58%] lg:flex-shrink-0 order-1 lg:order-2">
             <FilmVideo />
           </div>
 

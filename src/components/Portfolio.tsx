@@ -12,29 +12,32 @@ type WallItem = {
   src: string;
   aspect: string;
   client?: string;
+  poster?: string;
 };
 
+const P = "/assets/wall/posters";
+
 const items: WallItem[] = [
-  { id: "ck-bird-ig",       type: "video", src: "/assets/wall/ck-bird-ig.mp4",       aspect: "9/16",  client: "Charles & Keith" },
-  { id: "knicks",           type: "image", src: "/assets/wall/knicks.png",           aspect: "2/3",   client: "ILLVZN" },
-  { id: "ck-easter-26",     type: "video", src: "/assets/wall/ck-easter-26.mp4",     aspect: "9/16",  client: "Charles & Keith" },
-  { id: "oakley-concept",   type: "video", src: "/assets/wall/oakley-concept.mp4",   aspect: "9/16",  client: "Oakley" },
+  { id: "ck-bird-ig",       type: "video", src: "/assets/wall/ck-bird-ig.mp4",       aspect: "9/16",  client: "Charles & Keith", poster: `${P}/ck-bird-ig.jpg` },
+  { id: "knicks",           type: "image", src: "/assets/wall/knicks.webp",           aspect: "2/3",   client: "ILLVZN" },
+  { id: "ck-easter-26",     type: "video", src: "/assets/wall/ck-easter-26.mp4",     aspect: "9/16",  client: "Charles & Keith", poster: `${P}/ck-easter-26.jpg` },
+  { id: "oakley-concept",   type: "video", src: "/assets/wall/oakley-concept.mp4",   aspect: "9/16",  client: "Oakley",           poster: `${P}/oakley-concept.jpg` },
   { id: "ck-qixi-butter",   type: "image", src: "/assets/wall/ck-qixi-butterflies.jpg", aspect: "1/1", client: "Charles & Keith" },
-  { id: "graft-contact",    type: "image", src: "/assets/wall/graft-contact.png",    aspect: "2/3" },
+  { id: "graft-contact",    type: "image", src: "/assets/wall/graft-contact.webp",    aspect: "2/3" },
   { id: "ck-tropical",      type: "image", src: "/assets/wall/ck-tropical.jpg",      aspect: "4/3",   client: "Charles & Keith" },
-  { id: "spurs",            type: "image", src: "/assets/wall/spurs.png",            aspect: "2/3",   client: "ILLVZN" },
-  { id: "ck-horse-tt",      type: "video", src: "/assets/wall/ck-horse-tt.mp4",      aspect: "9/16",  client: "Charles & Keith" },
-  { id: "sunset-youth",     type: "image", src: "/assets/wall/sunset-youth.png",     aspect: "2/3" },
-  { id: "ck-chihuahua",     type: "video", src: "/assets/wall/ck-chihuahua.mp4",     aspect: "4/5",   client: "Charles & Keith" },
+  { id: "spurs",            type: "image", src: "/assets/wall/spurs.webp",            aspect: "2/3",   client: "ILLVZN" },
+  { id: "ck-horse-tt",      type: "video", src: "/assets/wall/ck-horse-tt.mp4",      aspect: "9/16",  client: "Charles & Keith", poster: `${P}/ck-horse-tt.jpg` },
+  { id: "sunset-youth",     type: "image", src: "/assets/wall/sunset-youth.webp",     aspect: "2/3" },
+  { id: "ck-chihuahua",     type: "video", src: "/assets/wall/ck-chihuahua.mp4",     aspect: "4/5",   client: "Charles & Keith", poster: `${P}/ck-chihuahua.jpg` },
   { id: "oakley-portrait",  type: "image", src: "/assets/wall/oakley-portrait.jpg",  aspect: "3/4",   client: "Oakley" },
-  { id: "ck-summer-26",     type: "video", src: "/assets/wall/ck-summer-26.mp4",     aspect: "9/16",  client: "Charles & Keith" },
-  { id: "hf-video",         type: "video", src: "/assets/wall/hf-video.mp4",         aspect: "9/16" },
+  { id: "ck-summer-26",     type: "video", src: "/assets/wall/ck-summer-26.mp4",     aspect: "9/16",  client: "Charles & Keith", poster: `${P}/ck-summer-26.jpg` },
+  { id: "hf-video",         type: "video", src: "/assets/wall/hf-video.mp4",         aspect: "9/16",  poster: `${P}/hf-video.jpg` },
   { id: "ck-qixi-bag",      type: "image", src: "/assets/wall/ck-qixi-bag.jpg",      aspect: "3/2",   client: "Charles & Keith" },
-  { id: "netflix-graft",    type: "image", src: "/assets/wall/netflix-graft.png",    aspect: "16/9" },
+  { id: "netflix-graft",    type: "image", src: "/assets/wall/netflix-graft.webp",    aspect: "16/9" },
   { id: "ck-winter-animal", type: "image", src: "/assets/wall/ck-winter-animal.jpg", aspect: "4/5",   client: "Charles & Keith" },
-  { id: "ef-portrait",      type: "video", src: "/assets/wall/ef-portrait.mp4",      aspect: "3/4" },
+  { id: "ef-portrait",      type: "video", src: "/assets/wall/ef-portrait.mp4",      aspect: "3/4",   poster: `${P}/ef-portrait.jpg` },
   { id: "ck-polka-bag",     type: "image", src: "/assets/wall/ck-polka-bag.jpg",     aspect: "9/16",  client: "Charles & Keith" },
-  { id: "tennis",           type: "image", src: "/assets/wall/tennis.png",           aspect: "1/1" },
+  { id: "tennis",           type: "image", src: "/assets/wall/tennis.webp",           aspect: "1/1" },
 ];
 
 type CaseStudy = {
@@ -44,6 +47,7 @@ type CaseStudy = {
   description: string;
   image: string | null;
   video?: string;
+  poster?: string;
 };
 
 const caseStudies: CaseStudy[] = [
@@ -54,6 +58,7 @@ const caseStudies: CaseStudy[] = [
     description: copy.portfolio.caseStudies.items[0].description,
     image: "/assets/case-studies/beverley-knight/card-still.jpg",
     video: "/assets/case-studies/beverley-knight/card-loop.mp4",
+    poster: "/assets/case-studies/beverley-knight/card-poster.jpg",
   },
   {
     slug: "charles-keith",
@@ -77,13 +82,32 @@ function WallVideo({ item }: { item: WallItem }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(
+
+    let loaded = false;
+
+    // 200px pre-load margin: set src before element enters view
+    const loadObs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !loaded) {
+          loaded = true;
+          el.src = item.src;
+          el.load();
+          loadObs.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    // Play/pause once in actual view
+    const playObs = new IntersectionObserver(
       ([e]) => { e.isIntersecting ? el.play().catch(() => {}) : el.pause(); },
       { threshold: 0.1 }
     );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+
+    loadObs.observe(el);
+    playObs.observe(el);
+    return () => { loadObs.disconnect(); playObs.disconnect(); };
+  }, [item.src]);
 
   return (
     <div className="relative overflow-hidden group" style={{ aspectRatio: item.aspect }}>
@@ -92,11 +116,10 @@ function WallVideo({ item }: { item: WallItem }) {
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
+        poster={item.poster}
         className="w-full h-full object-cover block transition-transform duration-700 group-hover:scale-[1.04]"
-      >
-        <source src={item.src} type="video/mp4" />
-      </video>
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none" />
       {item.client && (
         <p className="absolute bottom-3 left-3 text-[9px] tracking-[0.22em] uppercase text-white/75 font-semibold opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -114,6 +137,7 @@ function WallImage({ item }: { item: WallItem }) {
         src={item.src}
         alt={item.client ?? "Graft Media"}
         fill
+        loading="eager"
         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
       />
@@ -194,10 +218,11 @@ export default function Portfolio() {
                       muted
                       loop
                       playsInline
+                      preload="none"
+                      poster={cs.poster}
+                      src={cs.video}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    >
-                      <source src={cs.video} type="video/mp4" />
-                    </video>
+                    />
                   ) : cs.image ? (
                     <Image
                       src={cs.image}

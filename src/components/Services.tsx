@@ -20,23 +20,13 @@ const CONCEPT_GRID = [
   "/assets/images/concepts-s9.jpg",
 ];
 
-// Character pairs (and one trio) for the active slideshow.
-// Each inner array becomes a flex row of bottom-aligned figures,
-// filling the horizontal container without white-space artifacts.
-const CONCEPT_PAIRS: string[][] = [
-  ["/assets/images/concepts-s1-alpha.png", "/assets/images/concepts-s2-alpha.png"],   // Look 4
-  ["/assets/images/concepts-s3-alpha.png", "/assets/images/concepts-s4-alpha.png"],   // Look 6
-  ["/assets/images/concepts-s5-alpha.png", "/assets/images/concepts-s6-alpha.png"],   // Look 7
-  ["/assets/images/concepts-s7-alpha.png", "/assets/images/concepts-s8-alpha.png"],   // Look 8
-  ["/assets/images/concepts-still-alpha.png", "/assets/images/concepts-s10-alpha.png"],  // Look 12 (still + 12C, both absent from grid)
-];
-
 const phases = [
   {
     number: copy.services.phases[0].number,
     phase: copy.services.phases[0].name,
     description: copy.services.phases[0].description,
     deliverables: copy.services.phases[0].deliverables,
+    video: "/assets/videos/concepts-hover.mp4",
     type: "slideshow" as const,
   },
   {
@@ -53,48 +43,24 @@ const phases = [
     phase: copy.services.phases[2].name,
     description: copy.services.phases[2].description,
     deliverables: copy.services.phases[2].deliverables,
+    still: "/assets/images/campaign-production-still.jpg",
     video: "/assets/videos/campaign-production.mp4",
-    type: "video-only" as const,
+    type: "video" as const,
   },
 ];
 
 export default function Services() {
   const [hovered, setHovered] = useState<number | null>(null);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const slideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
-
-  // Preload all pair images so switches are instant
-  useEffect(() => {
-    CONCEPT_PAIRS.flat().forEach((src) => {
-      const img = new window.Image() as HTMLImageElement;
-      img.src = src;
-    });
-  }, []);
 
   // Play/pause desktop accordion videos based on hover state
   useEffect(() => {
-    [1, 2].forEach((phaseIdx) => {
+    [0, 1, 2].forEach((phaseIdx) => {
       const vid = videoRefs.current[phaseIdx];
       if (!vid) return;
       if (hovered === phaseIdx) vid.play().catch(() => {});
       else vid.pause();
     });
-  }, [hovered]);
-
-  // Slideshow interval — only runs while Concepts is active
-  useEffect(() => {
-    if (hovered === 0) {
-      slideRef.current = setInterval(() => {
-        setSlideIndex((i) => (i + 1) % CONCEPT_PAIRS.length);
-      }, 800);
-    } else {
-      if (slideRef.current) clearInterval(slideRef.current);
-      setSlideIndex(0);
-    }
-    return () => {
-      if (slideRef.current) clearInterval(slideRef.current);
-    };
   }, [hovered]);
 
   const gridCols =
@@ -209,21 +175,23 @@ export default function Services() {
                       <div className="absolute inset-0 bg-[#FFF0F0]/82" />
                     </div>
 
-                    {/* Slideshow — pair of alpha-keyed figures, flex row, bottom-aligned */}
+                    {/* Video — plays on hover */}
                     <div
-                      className="absolute inset-0 pointer-events-none flex items-end"
+                      className="absolute inset-0 pointer-events-none"
                       style={{
                         opacity: isActive ? 1 : 0,
                         transition: "opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                       }}
                     >
-                      {CONCEPT_PAIRS[slideIndex].map((src, j) => (
-                        <div key={j} className="flex-1 h-full flex items-end justify-center overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={src} alt="" className="h-full w-auto" aria-hidden />
-                        </div>
-                      ))}
-                      {/* Overlay — same weight as Asset Creation / Campaign Production at hover */}
+                      <video
+                        ref={(el) => { videoRefs.current[i] = el; }}
+                        src={(phase as typeof phase & { video: string }).video}
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="absolute inset-0 w-full h-full object-cover object-center"
+                      />
                       <div className="absolute inset-0 bg-[#FFF0F0]/72" />
                     </div>
                   </>
@@ -270,33 +238,6 @@ export default function Services() {
                   </>
                 )}
 
-                {/* ── Campaign Production: video dims until hovered ── */}
-                {phase.type === "video-only" && (
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      opacity: isActive ? 1 : 0.55,
-                      transition: "opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
-                  >
-                    <video
-                      ref={(el) => { videoRefs.current[i] = el; }}
-                      src={(phase as typeof phase & { video: string }).video}
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="absolute inset-0 w-full h-full object-cover object-center"
-                    />
-                    <div
-                      className="absolute inset-0 bg-[#FFF0F0]"
-                      style={{
-                        opacity: isActive ? 0.72 : 0.78,
-                        transition: "opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1)",
-                      }}
-                    />
-                  </div>
-                )}
 
                 {/* Accent top bar */}
                 <motion.div

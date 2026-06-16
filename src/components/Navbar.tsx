@@ -48,24 +48,85 @@ export default function Navbar() {
     video.load();
 
     let raf = 0;
+    // Safari can't use mix-blend-mode on fixed compositor layers, so we crop
+    // the canvas to the tight content bounds on first frame — any residual white
+    // fringe is then a few pixels at the very edge rather than a large visible box.
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    let cropSrc: { x: number; y: number; w: number; h: number } | null = null;
+    let boundsDetected = false;
+
     const draw = () => {
       if (video.readyState >= 2 && video.videoWidth > 0) {
-        // Sync canvas to actual video dimensions so drawImage doesn't squash content
-        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+
+        if (isSafari && !boundsDetected) {
+          boundsDetected = true;
+          // Scan the first frame on a temp canvas to find the non-white bounding box.
+          // Threshold at 40 to avoid MP4 compression artefacts at frame edges being
+          // detected as content (they typically deviate < 20 from white).
+          const tmp = document.createElement("canvas");
+          tmp.width = vw; tmp.height = vh;
+          const tc = tmp.getContext("2d")!;
+          tc.drawImage(video, 0, 0);
+          const { data } = tc.getImageData(0, 0, vw, vh);
+          let x0 = vw, y0 = vh, x1 = 0, y1 = 0;
+          for (let y = 0; y < vh; y++) {
+            for (let x = 0; x < vw; x++) {
+              const i = (y * vw + x) * 4;
+              if (Math.max(255 - data[i], 255 - data[i + 1], 255 - data[i + 2]) > 40) {
+                if (x < x0) x0 = x; if (y < y0) y0 = y;
+                if (x > x1) x1 = x; if (y > y1) y1 = y;
+              }
+            }
+          }
+          if (x1 > x0) {
+            const pad = 12;
+            const cx = Math.max(0, x0 - pad);
+            const cy = Math.max(0, y0 - pad);
+            cropSrc = {
+              x: cx, y: cy,
+              w: Math.min(vw, x1 + pad + 1) - cx,
+              h: Math.min(vh, y1 + pad + 1) - cy,
+            };
+            canvas.width = cropSrc.w;
+            canvas.height = cropSrc.h;
+            // Restore the logo's visual position: add back the cropped-off space
+            // on each side as CSS padding so the element occupies the same footprint
+            // as the original full-frame canvas. Scale = 6.25rem / vh (display rem
+            // per source pixel). box-sizing must be content-box so padding is
+            // additive rather than inset (Tailwind defaults to border-box).
+            const scale = 6.25 / vh;
+            canvas.style.boxSizing = "content-box";
+            canvas.style.height = `${cropSrc.h * scale}rem`;
+            canvas.style.padding = [
+              cy,
+              vw - cx - cropSrc.w,
+              vh - cy - cropSrc.h,
+              cx,
+            ].map(v => `${v * scale}rem`).join(" ");
+          }
         }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // Key out near-white background pixels — works in Safari without mix-blend-mode
-        // (fixed-position elements are always GPU compositor layers; Safari can't blend those)
-        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        const src = isSafari ? cropSrc : null;
+        const cw = src ? src.w : vw;
+        const ch = src ? src.h : vh;
+        if (canvas.width !== cw || canvas.height !== ch) {
+          canvas.width = cw; canvas.height = ch;
+        }
+        ctx.clearRect(0, 0, cw, ch);
+        if (src) {
+          ctx.drawImage(video, src.x, src.y, src.w, src.h, 0, 0, cw, ch);
+        } else {
+          ctx.drawImage(video, 0, 0, cw, ch);
+        }
+
+        // Pixel-key any remaining fringe within the cropped region
+        const img = ctx.getImageData(0, 0, cw, ch);
         const d = img.data;
         for (let i = 0; i < d.length; i += 4) {
-          const r = d[i], g = d[i + 1], b = d[i + 2];
-          if (r > 220 && g > 220 && b > 220) {
-            d[i + 3] = Math.round(Math.max(0, (255 - Math.min(r, g, b)) * (255 / 35)));
-          }
+          const dev = Math.max(255 - d[i], 255 - d[i + 1], 255 - d[i + 2]);
+          if (dev < 100) d[i + 3] = Math.round(dev * (255 / 100));
         }
         ctx.putImageData(img, 0, 0);
       }

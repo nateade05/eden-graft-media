@@ -4,17 +4,17 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const row1 = [
-  { src: "/assets/images/material-circuit.png", label: "Circuit Board" },
-  { src: "/assets/images/material-gold.png",    label: "24K Gold" },
-  { src: "/assets/images/material-chrome.png",  label: "Chrome" },
-  { src: "/assets/images/material-fur.png",     label: "Soft Fur" },
+  { src: "/assets/images/material-circuit.webp", label: "Circuit Board" },
+  { src: "/assets/images/material-gold.webp",    label: "24K Gold" },
+  { src: "/assets/images/material-chrome.webp",  label: "Chrome" },
+  { src: "/assets/images/material-fur.webp",     label: "Soft Fur" },
 ];
 
 const row2 = [
-  { src: "/assets/images/material-rust.png",     label: "Oxidised Metal" },
-  { src: "/assets/images/material-lava.png",     label: "Molten Lava" },
-  { src: "/assets/images/material-magazine.png", label: "Magazine Collage" },
-  { src: "/assets/images/material-purple.png",   label: "Candy Purple" },
+  { src: "/assets/images/material-rust.webp",     label: "Oxidised Metal" },
+  { src: "/assets/images/material-lava.webp",     label: "Molten Lava" },
+  { src: "/assets/images/material-magazine.webp", label: "Magazine Collage" },
+  { src: "/assets/images/material-purple.webp",   label: "Candy Purple" },
 ];
 
 function GalleryRow({

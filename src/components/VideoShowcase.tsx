@@ -7,19 +7,19 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 const showcaseItems = [
   {
-    src: "/assets/images/material-lava.png",
+    src: "/assets/images/material-lava.webp",
     label: "Molten Lava",
     description: "Earth's raw energy — your brand forged in fire.",
     accent: "#e05a20",
   },
   {
-    src: "/assets/images/material-gold.png",
+    src: "/assets/images/material-gold.webp",
     label: "24K Gold",
     description: "The permanence of legacy, the language of prestige.",
     accent: "#c9a96e",
   },
   {
-    src: "/assets/images/material-magazine.png",
+    src: "/assets/images/material-magazine.webp",
     label: "Magazine Collage",
     description: "A decade of culture, compressed into a single mark.",
     accent: "#a070b8",

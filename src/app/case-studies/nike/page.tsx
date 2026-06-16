@@ -31,7 +31,7 @@ function NikeVideo() {
   useEffect(() => { ref.current?.play().catch(() => {}); }, []);
   return (
     <div className="relative w-full h-full bg-black">
-      <video ref={ref} autoPlay muted loop playsInline className="w-full h-full">
+      <video ref={ref} autoPlay muted loop playsInline className="w-full h-full object-contain">
         <source src="/assets/case-studies/nike/concept.mp4" type="video/mp4" />
       </video>
     </div>
@@ -48,7 +48,7 @@ export default function NikeCaseStudy() {
         <Image
           src="/assets/case-studies/nike/detail-grill.jpg"
           alt="Nike Campaign"
-          fill priority
+          fill priority loading="eager"
           className="object-cover object-center"
           sizes="100vw"
         />
@@ -221,7 +221,7 @@ export default function NikeCaseStudy() {
 
       {/* ── 03 The Film ── */}
       <section className="border-b border-white/6 overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-stretch">
+        <div className="flex flex-col lg:flex-row lg:items-center">
 
           {/* Text — flex-1 gets all the remaining width beside the portrait video */}
           <motion.div
@@ -229,7 +229,7 @@ export default function NikeCaseStudy() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex-1 min-w-0 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 md:order-1"
+            className="flex-1 min-w-[260px] flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 lg:order-1"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-5 font-semibold">
               {film.overline}
@@ -252,8 +252,8 @@ export default function NikeCaseStudy() {
             </div>
           </motion.div>
 
-          {/* Portrait video — 9:16, height = 90vh, width derived from aspect ratio */}
-          <div className="w-full aspect-[9/16] md:h-[90vh] md:w-auto md:flex-shrink-0 md:pr-14 lg:pr-20 order-1 md:order-2">
+          {/* Portrait video — aspect-[9/16] locks exact ratio at all sizes */}
+          <div className="w-full aspect-[9/16] lg:w-[36%] lg:flex-shrink-0 lg:pr-14 xl:pr-20 order-1 lg:order-2">
             <NikeVideo />
           </div>
 

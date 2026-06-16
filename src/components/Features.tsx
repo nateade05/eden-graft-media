@@ -13,7 +13,7 @@ const materials = [
     tag: "Circuit Board",
     description:
       "Precision-engineered electronics fused into your logotype. Perfect for tech companies, SaaS brands, and digital-native studios.",
-    image: "/assets/images/material-circuit.png",
+    image: "/assets/images/material-circuit.webp",
     accent: "#64d4ff",
   },
   {
@@ -22,7 +22,7 @@ const materials = [
     tag: "24K Gold Coin",
     description:
       "Ancient coinage, modern brand. The weight of gold — the permanence of legacy. Ideal for premium and luxury-tier positioning.",
-    image: "/assets/images/material-gold.png",
+    image: "/assets/images/material-gold.webp",
     accent: "#c9a96e",
   },
   {
@@ -31,7 +31,7 @@ const materials = [
     tag: "Brushed Chrome",
     description:
       "Reflective, surgical, timeless. Chrome speaks the language of precision engineering. For brands that mean business.",
-    image: "/assets/images/material-chrome.png",
+    image: "/assets/images/material-chrome.webp",
     accent: "#8090a8",
   },
   {
@@ -40,7 +40,7 @@ const materials = [
     tag: "Molten Lava",
     description:
       "Forged in the earth's core. For brands that run hot — disruptors, challengers, and those who refuse to be ignored.",
-    image: "/assets/images/material-lava.png",
+    image: "/assets/images/material-lava.webp",
     accent: "#e05a20",
   },
   {
@@ -49,7 +49,7 @@ const materials = [
     tag: "Soft Fur",
     description:
       "Impossibly tactile. A celebration of craft, warmth, and the unexpected. Makes audiences reach out and touch the screen.",
-    image: "/assets/images/material-fur.png",
+    image: "/assets/images/material-fur.webp",
     accent: "#4ab8b0",
   },
   {
@@ -58,7 +58,7 @@ const materials = [
     tag: "Oxidised Metal",
     description:
       "Weathered by time. Industrial-grade authenticity for brands that celebrate craft, heritage, and the beauty of decay.",
-    image: "/assets/images/material-rust.png",
+    image: "/assets/images/material-rust.webp",
     accent: "#b06828",
   },
 ];

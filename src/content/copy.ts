@@ -23,13 +23,13 @@ export const copy = {
   hero: {
     headlineLine1: "Brief in.",
     headlineLine2: "Campaign out.",
-    subtitle:      "We take your product and build the visual world around it, at machine speed.",
+    subtitle:      "AI-powered production. Human-directed craft.",
     mobileCta:     "See the work",
 
     speed: {
       overline: "Speed",
-      headline: "Weeks of production. Days of delivery.",
-      body:     "Traditional shoots take weeks to brief, cast, produce, and retouch. We collapse that timeline without compromising on creative quality.",
+      headline: "Days, not weeks. Quality, not compromise.",
+      body:     "What used to require studios, casting agents, and six-week timelines now happens in days. AI handles the production. We handle the vision.",
     },
 
     variations: {
@@ -85,6 +85,7 @@ export const copy = {
           "Ecommerce imagery",
           "Product mockups",
           "Merch design",
+          "Graphic design",
         ],
       },
       {
@@ -114,7 +115,7 @@ export const copy = {
         {
           client:      "Beverley Knight",
           title:       "Tour Merch & Music Video, Built in AI",
-          description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour — all AI, zero shoot days.",
+          description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour — all Ai.",
         },
         {
           client:      "Charles & Keith",
@@ -124,7 +125,7 @@ export const copy = {
         {
           client:      "Nike",
           title:       "A Nike Concept. Built Entirely in AI.",
-          description: "Raw characters, street energy, and a concept film. No cast, no crew, no studio — just a brief and the tools.",
+          description: "Raw character design, street energy, and a concept film. No cast, no crew, no studio — just a brief and the tools.",
         },
       ],
     },
@@ -233,7 +234,7 @@ export const copy = {
       specs: [
         { label: "Runtime", value: "3:17" },
         { label: "Format",  value: "1920×1080, 16:9" },
-        { label: "Tools",   value: "Kling AI · Runway · DaVinci Resolve" },
+        { label: "Tools",   value: "Kling AI · Runway · Premier Pro" },
       ],
     },
     cta: {
@@ -299,7 +300,7 @@ export const copy = {
       overline:        "Start your project",
       headline:        "Your campaign. Built in AI.",
       primaryButton:   "Start a project",
-      secondaryButton: "View Beverley Knight",
+      secondaryButton: "View Nike",
     },
   },
 

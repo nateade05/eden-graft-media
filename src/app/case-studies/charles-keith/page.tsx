@@ -136,7 +136,7 @@ function CampaignVideo() {
 
   return (
     <div ref={containerRef} className="relative w-full h-full bg-black group cursor-pointer" onClick={toggle}>
-      <video ref={ref} playsInline className="w-full h-full">
+      <video ref={ref} playsInline className="w-full h-full object-contain">
         <source src="/assets/case-studies/charles-keith/campaign.mp4" type="video/mp4" />
       </video>
 
@@ -217,6 +217,7 @@ export default function CharlesKeithCaseStudy() {
           alt="Charles & Keith Summer Calling Campaign"
           fill
           priority
+          loading="eager"
           className="object-cover object-center"
           sizes="100vw"
         />
@@ -446,7 +447,7 @@ export default function CharlesKeithCaseStudy() {
 
       {/* ── 04 The Film ── */}
       <section className="border-t border-black/6 overflow-hidden">
-        <div className="flex flex-col md:flex-row md:h-[70vh]">
+        <div className="flex flex-col lg:flex-row lg:items-center">
 
           {/* Text left column — takes remaining space after video */}
           <motion.div
@@ -454,7 +455,7 @@ export default function CharlesKeithCaseStudy() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex-1 min-w-0 flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 md:order-1"
+            className="flex-1 min-w-[260px] flex flex-col justify-center px-8 md:px-14 lg:px-20 py-16 md:py-24 order-2 lg:order-1"
           >
             <p className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-5 font-semibold">
               {film.overline}
@@ -477,8 +478,8 @@ export default function CharlesKeithCaseStudy() {
             </div>
           </motion.div>
 
-          {/* Video right column — 16:9 at full section height */}
-          <div className="w-full aspect-video md:h-full md:w-auto flex-shrink-0 order-1 md:order-2">
+          {/* Video right column — percentage width, aspect-video locks exact 16:9 at all sizes */}
+          <div className="w-full aspect-video lg:w-[58%] flex-shrink-0 order-1 lg:order-2">
             <CampaignVideo />
           </div>
 

@@ -176,6 +176,26 @@ export default function Process() {
           ))}
         </motion.div>
 
+        {/* ── Process reel ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1.0, delay: 0.2, ease }}
+          className="mt-16 md:mt-28 rounded-2xl overflow-hidden"
+        >
+          <video
+            src="/assets/videos/process-reel.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster="/assets/videos/process-reel-poster.jpg"
+            className="w-full object-cover"
+          />
+        </motion.div>
+
       </div>
     </section>
   );
