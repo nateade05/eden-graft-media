@@ -84,32 +84,40 @@ function WallVideo({ item }: { item: WallItem }) {
     const el = ref.current;
     if (!el) return;
 
-    // Explicitly set DOM property — React only sets the HTML attribute, which
-    // iOS ignores when deciding whether to allow programmatic play().
+    // DOM property must be set — React's muted attribute is ignored by iOS.
     el.muted = true;
 
     let loaded = false;
+    let inView = false;
 
-    // 200px pre-load margin: set src before element enters view
+    // Only play when BOTH src is loaded AND element is visible.
+    // Avoids the race where playObs fires before loadObs has set the src.
+    const tryPlay = () => { if (loaded && inView) el.play().catch(() => {}); };
+
+    // Pre-fetch src 200 px before the element enters view
     const loadObs = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting && !loaded) {
           loaded = true;
           el.src = item.src;
           el.load();
+          tryPlay();          // play immediately if already in view
           loadObs.disconnect();
         }
       },
       { rootMargin: "200px" }
     );
 
-    // Play/pause once in actual view
+    // Play / pause as the element enters / leaves the viewport
     const playObs = new IntersectionObserver(
-      ([e]) => { e.isIntersecting ? el.play().catch(() => {}) : el.pause(); },
+      ([e]) => {
+        inView = e.isIntersecting;
+        if (inView) tryPlay(); else el.pause();
+      },
       { threshold: 0.1 }
     );
 
-    // On first mobile touch, start playing if this video is in view at that moment
+    // iOS unlock: first touch on the page dispatches "videoUnlock"
     const onUnlock = () => {
       const r = el.getBoundingClientRect();
       if (r.bottom > 0 && r.top < window.innerHeight) el.play().catch(() => {});

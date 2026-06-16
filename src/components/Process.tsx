@@ -29,6 +29,7 @@ const NODES = [
 export default function Process() {
   const ref = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const mobileTimelineRef = useRef<HTMLDivElement>(null);
   const inView = useInView(timelineRef, { once: true, margin: "-60px" });
   const shouldReduceMotion = useReducedMotion();
 
@@ -139,42 +140,60 @@ export default function Process() {
           </motion.div>
         </div>
 
-        {/* ── Mobile: vertical timeline — shares timelineRef via md:hidden sibling ──
-            No SVG, no preserveAspectRatio, no browser quirks.
-            Circle left + flex connector line + content right. */}
-        <motion.div
-          initial="hidden"
-          animate={shouldReduceMotion || inView ? "visible" : "hidden"}
-          variants={{ visible: { transition: { staggerChildren: shouldReduceMotion ? 0 : 0.18 } } }}
-          className="md:hidden"
-        >
+        {/* ── Mobile: vertical timeline ──
+            The connector is absolute inside a w-9 relative column.
+            top:18px = current circle centre; bottom:-18px = next circle centre.
+            This gives exact centre-to-centre connection regardless of content height. */}
+        <div ref={mobileTimelineRef} className="md:hidden">
           {steps.map((step, i) => (
-            <motion.div
-              key={step.number}
-              variants={{
-                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -14 },
-                visible: { opacity: 1, x: 0, transition: { duration: shouldReduceMotion ? 0 : 0.6, ease } },
-              }}
-              className="flex gap-5 pb-10 last:pb-0"
-            >
-              {/* Left: circle + vertical connector to next step */}
-              <div className="flex flex-col items-center flex-shrink-0">
-                <div className="w-9 h-9 rounded-full border border-black/15 bg-[#FFF0F0] flex items-center justify-center z-10">
-                  <span className="text-[10px] font-black text-black/40 tracking-tight">{step.number}</span>
-                </div>
+            <div key={step.number} className="flex gap-5">
+
+              {/* Left rail: fixed-width column, circle + absolute connector */}
+              <div className="relative flex-shrink-0 w-9">
+                <motion.div
+                  initial={shouldReduceMotion ? false : { scale: 0.3, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.05 }}
+                  className="w-9 h-9 rounded-full border border-[rgba(200,55,26,0.35)] bg-[#FFF0F0] flex items-center justify-center relative z-10"
+                >
+                  <span className="text-[10px] font-black text-[rgba(200,55,26,0.55)] tracking-tight">{step.number}</span>
+                </motion.div>
+
                 {i < steps.length - 1 && (
-                  <div className="flex-1 w-px bg-black/10 mt-2 mb-0" />
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 w-px"
+                    style={{ top: 18, bottom: -18 }}
+                  >
+                    {/* Ghost rail — visible immediately */}
+                    <div className="absolute inset-0 bg-black/[0.07]" />
+                    {/* Coloured fill draws downward */}
+                    <motion.div
+                      initial={shouldReduceMotion ? false : { scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true, margin: "-40px" }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.2, ease }}
+                      className="absolute inset-0 bg-[rgba(200,55,26,0.4)] origin-top"
+                    />
+                  </div>
                 )}
               </div>
 
-              {/* Right: content */}
-              <div className="pt-1 pb-2">
+              {/* Right: content — pb-14 sets the between-step gap */}
+              <motion.div
+                initial={shouldReduceMotion ? false : { opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.55, ease, delay: 0.1 }}
+                className={`pt-1 ${i < steps.length - 1 ? "pb-14" : "pb-0"}`}
+              >
                 <h3 className="text-xl font-black text-[#0A0A0A] mb-3">{step.title}</h3>
                 <p className="text-sm text-black/40 leading-relaxed">{step.description}</p>
-              </div>
-            </motion.div>
+              </motion.div>
+
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* ── Process reel ── */}
         <motion.div

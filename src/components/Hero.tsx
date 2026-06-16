@@ -218,7 +218,12 @@ export default function Hero() {
 
     function playAndCommit(from: HTMLVideoElement, to: HTMLVideoElement, onCommit: () => void) {
       to.play().catch(() => {});
-      const commit = () => { from.style.opacity = "0"; to.style.opacity = "1"; onCommit(); };
+      // Show `to` first, then hide `from` on the next rAF — ensures one is always
+      // visible to the compositor and eliminates the Chrome single-frame gap.
+      const commit = () => {
+        to.style.opacity = "1";
+        requestAnimationFrame(() => { from.style.opacity = "0"; onCommit(); });
+      };
       if (isMp4) {
         // Plain MP4 — no alpha plane to sync, single rAF is enough
         requestAnimationFrame(commit);
@@ -451,8 +456,8 @@ export default function Hero() {
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => { setHovering(false); setInCharZone(false); }}
               >
-                <video ref={vidARef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 1 }} />
-                <video ref={vidBRef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 0 }} />
+                <video ref={vidARef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 1, willChange: "opacity", transform: "translateZ(0)" }} />
+                <video ref={vidBRef} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 0, willChange: "opacity", transform: "translateZ(0)" }} />
               </div>
             </motion.div>
           </div>

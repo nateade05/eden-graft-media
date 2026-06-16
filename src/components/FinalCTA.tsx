@@ -157,7 +157,7 @@ export default function FinalCTA() {
         {/* Fade overlay so text stays readable */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(240,240,240,0.55) 0%, rgba(240,240,240,0.4) 40%, rgba(240,240,240,0.7) 80%, #f0f0f0 100%)" }}
+          style={{ background: "linear-gradient(to bottom, rgba(240,240,240,0.75) 0%, rgba(240,240,240,0.65) 40%, rgba(240,240,240,0.85) 80%, #f0f0f0 100%)" }}
         />
       </motion.div>
 
@@ -185,13 +185,20 @@ export default function FinalCTA() {
             </p>
           </motion.div>
 
-          {/* Headline — typewriter */}
-          <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] mb-8 whitespace-pre-wrap select-none">
-            {displayed}
-            {!done && (
-              <span className="inline-block w-[3px] h-[0.85em] bg-[#1A1612] align-middle ml-[2px] animate-blink" />
-            )}
-          </h2>
+          {/* Headline — typewriter, fixed height via ghost */}
+          <div className="relative mb-8">
+            {/* Ghost text reserves the full height from the start */}
+            <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] whitespace-pre-wrap select-none invisible" aria-hidden>
+              {typewriterText}
+            </h2>
+            {/* Typewriter text sits on top */}
+            <h2 className="absolute inset-0 text-[clamp(3rem,6vw,5.5rem)] font-black leading-[1.00] tracking-tight text-[#1A1612] whitespace-pre-wrap select-none">
+              {displayed}
+              {!done && (
+                <span className="inline-block w-[3px] h-[0.85em] bg-[#1A1612] align-middle ml-[2px] animate-blink" />
+              )}
+            </h2>
+          </div>
 
           {/* Body */}
           <motion.p
