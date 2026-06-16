@@ -218,24 +218,26 @@ export default function Hero() {
 
     function playAndCommit(from: HTMLVideoElement, to: HTMLVideoElement, onCommit: () => void) {
       to.play().catch(() => {});
-      // Show `to` first, then hide `from` on the next rAF — ensures one is always
-      // visible to the compositor and eliminates the Chrome single-frame gap.
-      const commit = () => {
-        to.style.opacity = "1";
-        requestAnimationFrame(() => { from.style.opacity = "0"; onCommit(); });
-      };
+      // Atomic swap used by Chrome and fallback: both opacity changes in one call so
+      // the browser paints them together — no gap, no one-frame double-image flash.
+      const atomicSwap = () => { from.style.opacity = "0"; to.style.opacity = "1"; onCommit(); };
       if (isMp4) {
-        // Plain MP4 — no alpha plane to sync, single rAF is enough
-        requestAnimationFrame(commit);
+        // Safari MP4: no alpha plane — stagger the swap so there is always one video
+        // visible to the compositor (show incoming first, then hide outgoing).
+        requestAnimationFrame(() => {
+          to.style.opacity = "1";
+          requestAnimationFrame(() => { from.style.opacity = "0"; onCommit(); });
+        });
       } else if ("requestVideoFrameCallback" in to) {
-        // 3 frames: luminance ready on frame 1, alpha synced by frame 2, frame 3 is the safety
+        // Chrome VP9-alpha webm: wait 3 rVFC so both luminance + alpha planes are
+        // committed to the GPU texture, then atomic swap in one synchronous call.
         (to as any).requestVideoFrameCallback(() => {
           (to as any).requestVideoFrameCallback(() => {
-            (to as any).requestVideoFrameCallback(commit);
+            (to as any).requestVideoFrameCallback(atomicSwap);
           });
         });
       } else {
-        requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(commit))));
+        requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(atomicSwap))));
       }
     }
 
