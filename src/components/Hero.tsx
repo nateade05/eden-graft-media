@@ -201,14 +201,20 @@ export default function Hero() {
     function preload(vid: HTMLVideoElement, src: string) {
       vid.playbackRate = 1; vid.src = v(src); vid.loop = false; vid.preload = "auto"; vid.load();
       if (!isMp4) {
-        // GPU pre-warm for VP9 alpha (webm only): play one rVFC frame then park so the
-        // alpha plane is in the compositor before playAndCommit swaps.
+        // GPU pre-warm for VP9 alpha (webm only): play 3 rVFC frames then park so both
+        // the luma and the separate alpha VP8 bitstream are committed to the GPU
+        // compositor before playAndCommit swaps. 1 rVFC was not always sufficient for
+        // the alpha plane under driver/memory pressure.
         const warm = () => {
           vid.play().then(() => {
             if ("requestVideoFrameCallback" in (vid as any)) {
-              (vid as any).requestVideoFrameCallback(() => vid.pause());
+              (vid as any).requestVideoFrameCallback(() => {
+                (vid as any).requestVideoFrameCallback(() => {
+                  (vid as any).requestVideoFrameCallback(() => vid.pause());
+                });
+              });
             } else {
-              requestAnimationFrame(() => vid.pause());
+              requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => vid.pause())));
             }
           }).catch(() => {});
         };
@@ -229,11 +235,17 @@ export default function Hero() {
           requestAnimationFrame(() => { from.style.opacity = "0"; onCommit(); });
         });
       } else if ("requestVideoFrameCallback" in to) {
-        // Chrome VP9-alpha webm: wait 3 rVFC so both luminance + alpha planes are
+        // Chrome VP9-alpha webm: wait 5 rVFC so both luminance + alpha planes are
         // committed to the GPU texture, then atomic swap in one synchronous call.
+        // 3 rVFC was insufficient when the GPU texture was evicted during the idle
+        // period between the pre-warm and the actual swap.
         (to as any).requestVideoFrameCallback(() => {
           (to as any).requestVideoFrameCallback(() => {
-            (to as any).requestVideoFrameCallback(atomicSwap);
+            (to as any).requestVideoFrameCallback(() => {
+              (to as any).requestVideoFrameCallback(() => {
+                (to as any).requestVideoFrameCallback(atomicSwap);
+              });
+            });
           });
         });
       } else {
