@@ -125,6 +125,13 @@ export default function Hero() {
     };
   }, [advanceStep]);
 
+  // ── Hide real cursor when custom cursor is active ────────────────────────────
+  useEffect(() => {
+    const hide = transforming || (clickable && hovering && (isSafari || inCharZone));
+    document.body.style.cursor = hide ? "none" : "";
+    return () => { document.body.style.cursor = ""; };
+  }, [transforming, clickable, hovering, isSafari, inCharZone]);
+
   // ── Mouse tracking ────────────────────────────────────────────────────────────
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -319,12 +326,22 @@ export default function Hero() {
       transitionStartRef.current = null;
       predictedTransMsRef.current = T_trans * 1000;
       setTransforming(true);
-      const A = 0.6 * Math.min(1, remaining / 1.5);
+      const t_split = T > 0 ? remaining / T : 0.5;
       const clickTime = performance.now();
       const rampTick = () => {
         const t = Math.min(1, (performance.now() - clickTime) / (T * 1000));
         const cur = activeRef.current === "a" ? vidARef.current : vidBRef.current;
-        if (cur) cur.playbackRate = 1 + A * 0.5 * (1 - Math.cos(2 * Math.PI * t));
+        let rate: number;
+        if (t <= t_split) {
+          // Solo: ease-in 1× → 2.5×
+          const p = t_split > 0 ? t / t_split : 1;
+          rate = 1 + 1.5 * p * p;
+        } else {
+          // Transition: ease-out 2.5× → 1×
+          const q = 1 - (t - t_split) / Math.max(0.001, 1 - t_split);
+          rate = 1 + 1.5 * q * q;
+        }
+        if (cur) cur.playbackRate = rate;
         if (t < 1) rampRafRef.current = requestAnimationFrame(rampTick);
       };
       rampRafRef.current = requestAnimationFrame(rampTick);
@@ -452,7 +469,7 @@ export default function Hero() {
           {/* Safari: full-bleed raw video, all text in front */}
           <div
             className="absolute inset-0 z-10"
-            style={{ cursor: clickable ? "none" : "default" }}
+            style={{ cursor: (clickable || transforming) ? "none" : "default" }}
             onClick={handleVideoClick}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
@@ -512,7 +529,7 @@ export default function Hero() {
               <div
                 ref={videoDivRef}
                 className="relative h-[78vh]"
-                style={{ aspectRatio: "1928 / 1072", cursor: clickable ? "none" : "default", clipPath: "inset(0 18% 0 18%)" }}
+                style={{ aspectRatio: "1928 / 1072", cursor: (clickable || transforming) ? "none" : "default", clipPath: "inset(0 18% 0 18%)" }}
                 onClick={handleVideoClick}
                 onMouseMove={(e) => {
                   setCursorPos({ x: e.clientX, y: e.clientY });
@@ -666,15 +683,15 @@ export default function Hero() {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
               <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-                <circle cx="19" cy="19" r="17" stroke="#D2647F" strokeWidth="1" opacity="0.5" />
-                <circle cx="19" cy="19" r="2" fill="#D2647F" />
-                <line x1="19" y1="3" x2="19" y2="10" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
-                <line x1="19" y1="28" x2="19" y2="35" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
-                <line x1="3" y1="19" x2="10" y2="19" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
-                <line x1="28" y1="19" x2="35" y2="19" stroke="#D2647F" strokeWidth="0.75" opacity="0.6" />
+                <circle cx="19" cy="19" r="17" stroke="#D2647F" strokeWidth="2" opacity="1" />
+                <circle cx="19" cy="19" r="2.5" fill="#D2647F" />
+                <line x1="19" y1="3" x2="19" y2="10" stroke="#D2647F" strokeWidth="1.75" opacity="1" />
+                <line x1="19" y1="28" x2="19" y2="35" stroke="#D2647F" strokeWidth="1.75" opacity="1" />
+                <line x1="3" y1="19" x2="10" y2="19" stroke="#D2647F" strokeWidth="1.75" opacity="1" />
+                <line x1="28" y1="19" x2="35" y2="19" stroke="#D2647F" strokeWidth="1.75" opacity="1" />
               </svg>
             </motion.div>
-            <span style={{ fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#D2647F", opacity: 0.85, marginTop: "6px", whiteSpace: "nowrap" }}>Transform</span>
+            <span style={{ fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#D2647F", opacity: 0.85, marginTop: "6px", whiteSpace: "nowrap" }}>Transform</span>
           </motion.div>
         )}
         {transforming && (
@@ -685,14 +702,14 @@ export default function Hero() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <div style={{ width: 180, height: 2, background: "rgba(210,100,127,0.15)", borderRadius: 999, overflow: "hidden" }}>
+            <div style={{ width: 180, height: 3, background: "rgba(210,100,127,0.15)", borderRadius: 999, overflow: "hidden" }}>
               <div
                 ref={barDivRef}
                 style={{ height: "100%", background: "#D2647F", borderRadius: 999, width: "0%" }}
               />
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              {["T","R","A","N","S","F","O","R","M","I","N","G"].map((letter, i) => (
+              {["G","E","N","E","R","A","T","I","N","G"].map((letter, i) => (
                 <motion.span
                   key={i}
                   animate={{ opacity: [0.18, 1, 0.18] }}
