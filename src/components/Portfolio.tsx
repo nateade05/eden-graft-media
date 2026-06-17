@@ -39,6 +39,7 @@ const items: WallItem[] = [
   { id: "ck-winter-animal", type: "image", src: "/assets/wall/ck-winter-animal.jpg", aspect: "4/5",   client: "Charles & Keith" },
   { id: "ef-portrait",      type: "video", src: "/assets/wall/ef-portrait.mp4",      aspect: "3/4",   poster: `${P}/ef-portrait.jpg` },
   { id: "ck-polka-bag",     type: "image", src: "/assets/wall/ck-polka-bag.jpg",     aspect: "9/16",  client: "Charles & Keith" },
+  { id: "golfer",           type: "video", src: "/assets/wall/golfer.mp4",           aspect: "9/16",  poster: `${P}/golfer.jpg` },
   { id: "tennis",           type: "image", src: "/assets/wall/tennis.webp",           aspect: "1/1" },
 ];
 
