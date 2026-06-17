@@ -401,13 +401,20 @@ export default function Hero() {
       <canvas ref={mobileCanvasRef} className="absolute inset-0 w-full h-full object-contain pointer-events-none" style={{ mixBlendMode: "multiply" }} />
       <AnimatePresence>
         {!mobileVideoReady && (
-          <motion.div key="mobile-loading" className="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
-            <motion.div animate={{ opacity: [0.2, 0.65, 0.2] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="18" stroke="#D2647F" strokeWidth="0.75" />
-                <circle cx="20" cy="20" r="2" fill="#D2647F" />
-              </svg>
-            </motion.div>
+          <motion.div key="mobile-loading" className="absolute inset-0 z-[5] pointer-events-none overflow-hidden" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease }}>
+            <div className="absolute inset-0" style={{ background: "rgba(10,12,20,0.78)" }} />
+            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.55 }}>
+              <defs>
+                <filter id="alien-m" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+                  <feTurbulence type="turbulence" baseFrequency="0.008 0.005" numOctaves="4" seed="4">
+                    <animate attributeName="baseFrequency" values="0.008 0.005;0.013 0.009;0.008 0.005" dur="5s" repeatCount="indefinite" />
+                  </feTurbulence>
+                  <feColorMatrix type="matrix" values="0.4 0 0 0 0  0.5 0 0 0 0  0.8 0 0 0 0.05  0 0 0 0 1" />
+                </filter>
+              </defs>
+              <rect width="100%" height="100%" filter="url(#alien-m)" />
+            </svg>
+            <motion.div className="absolute inset-0" animate={{ opacity: [0.4, 0.85, 0.4] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(180,195,225,0.09) 0%, rgba(8,10,22,0.55) 100%)" }} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -536,16 +543,23 @@ export default function Hero() {
         </>
       )}
 
-      {/* Video loading indicator — fades out once first frame is playing */}
+      {/* Video loading — alien chrome texture fades out once first frame is playing */}
       <AnimatePresence>
         {!videoReady && (
-          <motion.div key="vid-loading" className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
-            <motion.div animate={{ opacity: [0.2, 0.65, 0.2] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="18" stroke="#D2647F" strokeWidth="0.75" />
-                <circle cx="20" cy="20" r="2" fill="#D2647F" />
-              </svg>
-            </motion.div>
+          <motion.div key="vid-loading" className="absolute inset-0 z-[15] pointer-events-none overflow-hidden" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease }}>
+            <div className="absolute inset-0" style={{ background: "rgba(10,12,20,0.78)" }} />
+            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.55 }}>
+              <defs>
+                <filter id="alien-d" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+                  <feTurbulence type="turbulence" baseFrequency="0.008 0.005" numOctaves="4" seed="4">
+                    <animate attributeName="baseFrequency" values="0.008 0.005;0.013 0.009;0.008 0.005" dur="5s" repeatCount="indefinite" />
+                  </feTurbulence>
+                  <feColorMatrix type="matrix" values="0.4 0 0 0 0  0.5 0 0 0 0  0.8 0 0 0 0.05  0 0 0 0 1" />
+                </filter>
+              </defs>
+              <rect width="100%" height="100%" filter="url(#alien-d)" />
+            </svg>
+            <motion.div className="absolute inset-0" animate={{ opacity: [0.4, 0.85, 0.4] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(180,195,225,0.09) 0%, rgba(8,10,22,0.55) 100%)" }} />
           </motion.div>
         )}
       </AnimatePresence>
