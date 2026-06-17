@@ -49,6 +49,8 @@ export default function Hero() {
   const [hovering, setHovering]             = useState(false);
   const [transforming, setTransforming]     = useState(false);
   const [isSafari, setIsSafari]             = useState(false);
+  const [videoReady, setVideoReady]         = useState(false);
+  const [mobileVideoReady, setMobileVideoReady] = useState(false);
   const barDivRef                           = useRef<HTMLDivElement>(null);
   const transformBarRafRef                  = useRef(0);
   const clickTimeRef                        = useRef(0);
@@ -255,7 +257,9 @@ export default function Hero() {
 
     activeRef.current = "a"; phaseRef.current = "trans"; idxRef.current = 0; pendingRef.current = false;
     vidA.src = v(CYCLE[0].trans); vidA.loop = false; vidA.preload = "auto"; vidA.load();
-    vidA.play().catch(() => {});
+    const tryFirstPlay = () => vidA.play().catch(() => {});
+    if (vidA.readyState >= 2) { tryFirstPlay(); } else { vidA.addEventListener("canplay", tryFirstPlay, { once: true }); }
+    vidA.addEventListener("playing", () => setVideoReady(true), { once: true });
     preload(vidB, CYCLE[1].solo);
 
     function handleEnded(this: HTMLVideoElement) {
@@ -383,7 +387,7 @@ export default function Hero() {
 
     const start = () => {
       if (started) return;
-      video.play().then(() => { started = true; drawLoop(); }).catch(() => {});
+      video.play().then(() => { started = true; setMobileVideoReady(true); drawLoop(); }).catch(() => {});
     };
     start();
     document.addEventListener("touchstart", start, { once: true, passive: true });
@@ -395,6 +399,18 @@ export default function Hero() {
     {/* ─── MOBILE HERO ────────────────────────────────────────────────── */}
     <section className="md:hidden relative min-h-[100svh] bg-[#F7F6F2] flex flex-col items-center justify-center px-6 text-center overflow-hidden pt-20 pb-16">
       <canvas ref={mobileCanvasRef} className="absolute inset-0 w-full h-full object-contain pointer-events-none" style={{ mixBlendMode: "multiply" }} />
+      <AnimatePresence>
+        {!mobileVideoReady && (
+          <motion.div key="mobile-loading" className="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
+            <motion.div animate={{ opacity: [0.2, 0.65, 0.2] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="18" stroke="#D2647F" strokeWidth="0.75" />
+                <circle cx="20" cy="20" r="2" fill="#D2647F" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, delay: 0.3, ease }} className="relative z-10 text-[clamp(4rem,16vw,5.5rem)] font-black leading-[0.88] tracking-tighter">
         <span className="block text-[#0A0A0A]">{copy.hero.headlineLine1}</span>
         <span className="block text-black/10">{copy.hero.headlineLine2}</span>
@@ -519,6 +535,20 @@ export default function Hero() {
           </AnimatePresence>
         </>
       )}
+
+      {/* Video loading indicator — fades out once first frame is playing */}
+      <AnimatePresence>
+        {!videoReady && (
+          <motion.div key="vid-loading" className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
+            <motion.div animate={{ opacity: [0.2, 0.65, 0.2] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="18" stroke="#D2647F" strokeWidth="0.75" />
+                <circle cx="20" cy="20" r="2" fill="#D2647F" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Step 0: subtitle + scroll indicator */}
       <AnimatePresence>
