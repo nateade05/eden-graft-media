@@ -115,7 +115,7 @@ export const copy = {
         {
           client:      "Beverley Knight",
           title:       "Tour Merch & Music Video, Built in AI",
-          description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour — all Ai.",
+          description: "Four merch designs, photorealistic wear mockups, and a full music video for the Systematic Overload tour. All AI.",
         },
         {
           client:      "Charles & Keith",
@@ -125,7 +125,7 @@ export const copy = {
         {
           client:      "Nike",
           title:       "A Nike Concept. Built Entirely in AI.",
-          description: "Raw character design, street energy, and a concept film. No cast, no crew, no studio — just a brief and the tools.",
+          description: "Raw character design, street energy, and a concept film. No cast, no crew, no studio. Just a brief and the tools.",
         },
       ],
     },
@@ -194,7 +194,7 @@ export const copy = {
     hero: {
       overline: "Case study",
       headline: "Beverley Knight",
-      subtitle: "Tour merch and a music video for the Systematic Overload tour — designed, rendered, and delivered entirely in AI.",
+      subtitle: "Tour merch and a music video for the Systematic Overload tour, designed, rendered, and delivered entirely in AI.",
     },
     stats: [
       { value: "4", label: "Merch designs" },
@@ -208,7 +208,7 @@ export const copy = {
     merch: {
       overline: "01. Merch Designs",
       headline: "Four designs. Zero print studio.",
-      body:     "Each design built from Beverley's catalogue — her portrait and three of her most iconic song titles. Tour-ready artwork generated in AI, print-ready from day one.",
+      body:     "Each design built from Beverley's catalogue: her portrait and three of her most iconic song titles. Tour-ready artwork generated in AI, print-ready from day one.",
       items: [
         { label: "Portrait" },
         { label: "Everything's Gonna Be Alright" },
@@ -219,18 +219,18 @@ export const copy = {
     mockups: {
       overline: "02. Wear Mockups",
       headline: "Product shoot. No product shoot.",
-      body:     "AI-rendered wear mockups across four colourways and designs. Photorealistic enough to go straight to e-commerce — no model booking, no garment printing, no photography day.",
+      body:     "AI-rendered wear mockups across four colourways and designs. Photorealistic enough to go straight to e-commerce. No model booking, no garment printing, no photography day.",
       items: [
-        { design: "Portrait tee — black" },
-        { design: "Shoulda Woulda Coulda — white" },
-        { design: "Come As You Are — black" },
-        { design: "Everything's Gonna Be Alright — white" },
+        { design: "Portrait tee, black" },
+        { design: "Shoulda Woulda Coulda, white" },
+        { design: "Come As You Are, black" },
+        { design: "Everything's Gonna Be Alright, white" },
       ],
     },
     film: {
       overline: "03. The Music Video",
       headline: "Systematic Overload.",
-      body:     "The full music video for the tour title track. Directed, generated, and edited entirely using AI tools — every scene, every transition, every grade.",
+      body:     "The full music video for the tour title track. Directed, generated, and edited entirely using AI tools. Every scene, every transition, every grade.",
       specs: [
         { label: "Runtime", value: "3:17" },
         { label: "Format",  value: "1920×1080, 16:9" },
@@ -294,7 +294,7 @@ export const copy = {
     web: {
       overline: "06. Live on the Web",
       headline: "Campaign to website. Same day.",
-      body:     "The campaign assets went straight from generation into a live Charles & Keith editorial site — desktop and mobile, no reshoots, no resizing.",
+      body:     "The campaign assets went straight from generation into a live Charles & Keith editorial site, desktop and mobile, no reshoots, no resizing.",
     },
     cta: {
       overline:        "Start your project",
@@ -311,7 +311,7 @@ export const copy = {
     hero: {
       overline: "Case study",
       headline: "Nike",
-      subtitle: "A Nike concept built entirely in AI. Raw characters, street energy, and a short film — no cast, no crew, no studio.",
+      subtitle: "A Nike concept built entirely in AI. Raw characters, street energy, and a short film. No cast, no crew, no studio.",
     },
     stats: [
       { value: "8", label: "Character portraits" },
@@ -320,23 +320,23 @@ export const copy = {
     ],
     brief: {
       overline: "The brief",
-      body:     "A proof of concept for what Nike campaign production looks like without a single real asset. We built the entire visual world from scratch — characters, environments, a concept film — using AI. No casting. No crew. No studio. Just a brief and the tools.",
+      body:     "A proof of concept for what Nike campaign production looks like without a single real asset. We built the entire visual world from scratch: characters, environments, a concept film, using AI. No casting. No crew. No studio. Just a brief and the tools.",
     },
     concept: {
       overline: "01. The Concept",
       headline: "Street energy. No street required.",
-      body1:    "The brief was to show what a Nike campaign looks like when it's built entirely in AI — not polished CGI, but raw, lived-in energy. Characters that feel like they've been somewhere. Imagery with weight to it.",
-      body2:    "We worked from the brand outwards: the culture, the aesthetic codes, the kind of athlete Nike actually speaks to. Everything generated from that direction — not from a prompt, but from a point of view.",
+      body1:    "The brief was to show what a Nike campaign looks like when it's built entirely in AI, not polished CGI, but raw, lived-in energy. Characters that feel like they've been somewhere. Imagery with weight to it.",
+      body2:    "We worked from the brand outwards: the culture, the aesthetic codes, the kind of athlete Nike actually speaks to. Everything generated from that direction, not from a prompt, but from a point of view.",
     },
     assets: {
       overline: "02. The Assets",
       headline: "Every image, AI-built.",
-      body:     "Each visual generated to feel unpolished by design. The grain, the lighting, the composition — all calibrated to look like a real shoot that wasn't supposed to surface. AI that doesn't look like AI.",
+      body:     "Each visual generated to feel unpolished by design. The grain, the lighting, the composition, all calibrated to look like a real shoot that wasn't supposed to surface. AI that doesn't look like AI.",
     },
     film: {
       overline: "03. The Film",
       headline: "Just Do It. No studio required.",
-      body:     "The concept film brings the assets into motion. Produced entirely with AI video tools — no location, no crew, no casting.",
+      body:     "The concept film brings the assets into motion. Produced entirely with AI video tools. No location, no crew, no casting.",
       specs: [
         { label: "Format", value: "720×1280, 9:16" },
         { label: "Output", value: "Social, paid, broadcast" },

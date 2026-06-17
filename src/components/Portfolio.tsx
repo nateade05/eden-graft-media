@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { copy } from "@/content/copy";
 import { blurData } from "@/lib/blurData";
+import { SLUG_KEY } from "@/components/HomeScrollRestore";
 
 type WallItem = {
   id: string;
@@ -99,6 +100,7 @@ function WallVideo({ item }: { item: WallItem }) {
       ([e]) => {
         if (e.isIntersecting && !loaded) {
           loaded = true;
+          el.preload = "auto";
           el.src = item.src;
           el.load();
           tryPlay();          // play immediately if already in view
@@ -230,12 +232,17 @@ export default function Portfolio() {
           {caseStudies.map((cs, i) => (
             <motion.div
               key={cs.slug}
+              data-slug={cs.slug}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
             >
-              <Link href={`/case-studies/${cs.slug}`} className="group block">
+              <Link
+                href={`/case-studies/${cs.slug}`}
+                className="group block"
+                onClick={() => sessionStorage.setItem(SLUG_KEY, cs.slug)}
+              >
                 {/* Image / Video */}
                 <div className="relative overflow-hidden aspect-[4/3] bg-black/5 mb-5">
                   {cs.video ? (
@@ -244,7 +251,7 @@ export default function Portfolio() {
                       muted
                       loop
                       playsInline
-                      preload="none"
+                      preload="auto"
                       poster={cs.poster}
                       src={cs.video}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"

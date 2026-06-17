@@ -8,27 +8,15 @@ import { blurData } from "@/lib/blurData";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-// JPEGs used for the inactive 3×3 grid (displayed at low opacity under overlay)
-const CONCEPT_GRID = [
-  "/assets/images/concepts-s1.jpg",
-  "/assets/images/concepts-s2.jpg",
-  "/assets/images/concepts-s3.jpg",
-  "/assets/images/concepts-s4.jpg",
-  "/assets/images/concepts-s5.jpg",
-  "/assets/images/concepts-s6.jpg",
-  "/assets/images/concepts-s7.jpg",
-  "/assets/images/concepts-s8.jpg",
-  "/assets/images/concepts-s9.jpg",
-];
-
 const phases = [
   {
     number: copy.services.phases[0].number,
     phase: copy.services.phases[0].name,
     description: copy.services.phases[0].description,
     deliverables: copy.services.phases[0].deliverables,
+    still: "/assets/images/concepts-still.jpg",
     video: "/assets/videos/concepts-hover.mp4",
-    type: "slideshow" as const,
+    type: "video" as const,
   },
   {
     number: copy.services.phases[1].number,
@@ -93,14 +81,7 @@ export default function Services() {
         <div className="md:hidden flex flex-col gap-px bg-black/6">
           {phases.map((phase) => (
             <div key={phase.number} className="relative bg-[#FFF0F0] p-8 overflow-hidden">
-              {/* Concepts mobile: faint grid texture */}
-              {phase.type === "slideshow" && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <Image src={CONCEPT_GRID[0]} alt="" fill className="object-cover" style={{ objectPosition: "center 10%" }} sizes="100vw" aria-hidden placeholder="blur" blurDataURL={blurData[CONCEPT_GRID[0]]} />
-                  <div className="absolute inset-0 bg-[#FFF0F0]/82" />
-                </div>
-              )}
-              {/* Asset Creation mobile: still image */}
+              {/* Still image background for all mobile panels */}
               {"still" in phase && (
                 <div className="absolute inset-0 pointer-events-none">
                   <Image src={(phase as typeof phase & { still: string }).still} alt="" fill className="object-cover object-center" sizes="100vw" aria-hidden placeholder="blur" blurDataURL={blurData[(phase as typeof phase & { still: string }).still]} />
@@ -146,61 +127,7 @@ export default function Services() {
                 onMouseEnter={() => setHovered(i)}
               >
 
-                {/* ── Concepts: 3×3 grid (inactive) ↔ alpha slideshow (active) ── */}
-                {phase.type === "slideshow" && (
-                  <>
-                    {/* Grid — faint background texture, matches other panels' inactive look */}
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        opacity: isActive ? 0 : 1,
-                        transition: "opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-                      }}
-                    >
-                      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-px">
-                        {CONCEPT_GRID.map((src, idx) => (
-                          <div key={idx} className="relative overflow-hidden">
-                            <Image
-                              src={src}
-                              alt=""
-                              fill
-                              className="object-cover"
-                              style={{ objectPosition: "center 10%" }}
-                              sizes="15vw"
-                              aria-hidden
-                              placeholder="blur"
-                              blurDataURL={blurData[src]}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      {/* Overlay — same weight as the other two panels at rest */}
-                      <div className="absolute inset-0 bg-[#FFF0F0]/82" />
-                    </div>
-
-                    {/* Video — plays on hover */}
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        opacity: isActive ? 1 : 0,
-                        transition: "opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-                      }}
-                    >
-                      <video
-                        ref={(el) => { videoRefs.current[i] = el; }}
-                        src={(phase as typeof phase & { video: string }).video}
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                      />
-                      <div className="absolute inset-0 bg-[#FFF0F0]/72" />
-                    </div>
-                  </>
-                )}
-
-                {/* ── Asset Creation: still (inactive) → video (active) ── */}
+                {/* ── Still (inactive) → video (active) ── */}
                 {phase.type === "video" && "still" in phase && (
                   <>
                     <div
