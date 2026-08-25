@@ -127,8 +127,45 @@ export const copy = {
           title:       "A Nike Concept. Built Entirely in AI.",
           description: "Raw character design, street energy, and a concept film. No cast, no crew, no studio. Just a brief and the tools.",
         },
+        {
+          client:      "Music Videos",
+          title:       "Three Tracks, Three Worlds.",
+          description: "A three-visualiser suite for three tracks, each shot in its own world. Concept, production, and cut-downs for premiere and social.",
+        },
       ],
     },
+  },
+
+
+  // ── Short Films ──────────────────────────────────────────────────────────────
+
+  shortFilms: {
+    overline: "Short films",
+    headline: "Beyond the campaign.",
+    body:     "Longer-form concept pieces built the same way as everything else: brief in, AI-produced, human-directed.",
+    viewAll:  "View all short films",
+    items: [
+      {
+        slug:        "hero-piece",
+        title:       "Hero Piece",
+        description: "A lucha libre concept film built entirely in AI. Crowd, ring, lights, no shoot day.",
+      },
+      {
+        slug:        "the-comeback",
+        title:       "The Comeback",
+        description: "A second lucha libre concept film, built the same way: no cast, no crew, no studio.",
+      },
+      {
+        slug:        "no-mercy",
+        title:       "No Mercy",
+        description: "A third pass at the same world, pushed further on character and lighting.",
+      },
+      {
+        slug:        "running-late",
+        title:       "Running Late",
+        description: "A street-level chase through a bakery and a city block. The one that started it all.",
+      },
+    ],
   },
 
 
@@ -347,6 +384,48 @@ export const copy = {
     cta: {
       overline:        "Start your project",
       headline:        "Brief in. Campaign out.",
+      primaryButton:   "Start a project",
+      secondaryButton: "View Music",
+    },
+  },
+
+
+  // ── Case Study: Music ────────────────────────────────────────────────────────
+
+  music: {
+    hero: {
+      overline: "Case study",
+      headline: "Music Videos",
+      subtitle: "A three-visualiser suite for three tracks. Three worlds, one release, cut for premiere and every social format.",
+    },
+    stats: [
+      { value: "3", label: "Tracks" },
+      { value: "3", label: "Visualisers" },
+      { value: "1", label: "Release" },
+    ],
+    brief: {
+      overline: "The brief",
+      body:     "A self-directed concept: three visualisers for three tracks, each built around its own world so every song has its own visual signature. Shot, cut, and graded end-to-end, then delivered ready for premiere and every cut-down that follows.",
+    },
+    visuals: {
+      overline: "01. The Visuals",
+      headline: "Three worlds.",
+      body:     "Open desert for the wide-open tracks, open field for Kino, neon and shadow for the floor. Every location chosen before a single frame was cut, so each visualiser carries its own mood.",
+    },
+    visualisers: {
+      overline: "02. The Visualisers",
+      headline: "Kino. Not Tonight. Wide Open.",
+      body:     "Three tracks, three visualisers, produced and graded for release.",
+      tracks: [
+        { title: "Kino",       description: "Shot in open field, close and handheld. The visual stays with the performance, not the production." },
+        { title: "Not Tonight", description: "Desert badlands at golden hour. Wide, still, and built around light rather than movement." },
+        { title: "Wide Open",  description: "A crowd and a floor, shot for the moment the track is actually built for." },
+      ],
+    },
+    banner: "Three tracks. One story.",
+    cta: {
+      overline:        "Start your project",
+      headline:        "Your next release, visualised.",
       primaryButton:   "Start a project",
       secondaryButton: "View Beverley Knight",
     },

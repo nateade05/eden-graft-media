@@ -4,6 +4,8 @@ import HomeScrollRestore from "@/components/HomeScrollRestore";
 import CredibilityStrip from "@/components/CredibilityStrip";
 import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
+import CaseStudies from "@/components/CaseStudies";
+import ShortFilms from "@/components/ShortFilms";
 import Process from "@/components/Process";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
@@ -15,8 +17,10 @@ export default function Home() {
       <Navbar />
       <Hero />
       <CredibilityStrip />
-      <Services />
       <Portfolio />
+      <Services />
+      <CaseStudies />
+      <ShortFilms />
       <Process />
       <FinalCTA />
       <Footer />
