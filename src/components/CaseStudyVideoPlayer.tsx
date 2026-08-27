@@ -7,14 +7,48 @@ function fmt(s: number) {
   return `${m}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
 }
 
-// Only one CaseStudyVideoPlayer may play at a time across the whole page —
-// claiming playback (via scroll-into-view or a click) pauses whichever
-// other instance was previously playing.
-let activePlayer: HTMLVideoElement | null = null;
-function claimPlayback(el: HTMLVideoElement) {
-  if (activePlayer && activePlayer !== el) activePlayer.pause();
-  activePlayer = el;
+// Only one CaseStudyVideoPlayer may play at a time across the whole page.
+// When several are stacked close together (e.g. three tracks on the Music
+// case study), scrolling can put two of them above the naive "40% visible"
+// bar at once — whichever crossed last used to win, which on a fast scroll
+// could skip the middle one entirely. Instead every instance reports its
+// live intersection ratio into this registry, and the single most-visible
+// one is (re)selected on every change — a strict "most in frame wins."
+// A manual click pins that choice until its own video scrolls out of view,
+// so it isn't immediately overridden by a more-visible neighbour.
+const MIN_RATIO = 0.4;
+type Entry = { ratio: number; manuallyPaused: boolean };
+const registry = new Map<HTMLVideoElement, Entry>();
+let pinned: HTMLVideoElement | null = null;
+
+function recompute() {
+  if (pinned) {
+    const rec = registry.get(pinned);
+    if (rec && rec.ratio >= MIN_RATIO) {
+      for (const el of registry.keys()) {
+        if (el === pinned) { if (el.paused) el.play().catch(() => {}); }
+        else if (!el.paused) el.pause();
+      }
+      return;
+    }
+    pinned = null; // scrolled out — release the pin, fall through to auto-select
+  }
+
+  let winner: HTMLVideoElement | null = null;
+  let best = MIN_RATIO;
+  for (const [el, rec] of registry) {
+    if (rec.manuallyPaused) continue;
+    if (rec.ratio > best) { best = rec.ratio; winner = el; }
+  }
+  for (const el of registry.keys()) {
+    if (el === winner) { if (el.paused) el.play().catch(() => {}); }
+    else if (!el.paused) el.pause();
+  }
 }
+
+// Every 10% step, not just one fixed threshold, so recompute() always has a
+// current ratio to compare rather than a stale "was it above 40%" boolean.
+const RATIO_THRESHOLDS = Array.from({ length: 11 }, (_, i) => i / 10);
 
 export default function CaseStudyVideoPlayer({ src, poster }: { src: string; poster?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -25,27 +59,21 @@ export default function CaseStudyVideoPlayer({ src, poster }: { src: string; pos
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const manuallyPaused = useRef(false);
   const scrubbing = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Threshold array (not a single value) so the callback fires both when
-    // crossing 0.4 *and* when fully leaving (ratio 0) — a single [0.4]
-    // threshold never re-fires on the way out past that point, which let a
-    // video that scrolled out of view keep playing underneath the next one.
+    registry.set(el, { ratio: 0, manuallyPaused: false });
+
     const obs = new IntersectionObserver(
       ([e]) => {
-        const inView = e.intersectionRatio >= 0.4;
-        if (inView && !manuallyPaused.current) {
-          claimPlayback(el);
-          el.play().catch(() => {});
-        } else if (!inView && !el.paused) {
-          el.pause();
-        }
+        const rec = registry.get(el);
+        if (!rec) return;
+        rec.ratio = e.intersectionRatio;
+        recompute();
       },
-      { threshold: [0, 0.4] }
+      { threshold: RATIO_THRESHOLDS }
     );
     obs.observe(el);
 
@@ -53,11 +81,12 @@ export default function CaseStudyVideoPlayer({ src, poster }: { src: string; pos
     // This handler runs synchronously inside the touchstart gesture context,
     // so iOS allows play() even for unmuted video.
     const onUnlock = () => {
-      if (manuallyPaused.current) return;
+      const rec = registry.get(el);
+      if (!rec || rec.manuallyPaused) return;
       const r = el.getBoundingClientRect();
       if (r.bottom > 0 && r.top < window.innerHeight) {
-        claimPlayback(el);
-        el.play().catch(() => {});
+        pinned = el;
+        recompute();
       }
     };
     window.addEventListener("videoUnlock", onUnlock, { once: true });
@@ -65,7 +94,9 @@ export default function CaseStudyVideoPlayer({ src, poster }: { src: string; pos
     return () => {
       obs.disconnect();
       window.removeEventListener("videoUnlock", onUnlock);
-      if (activePlayer === el) activePlayer = null;
+      registry.delete(el);
+      if (pinned === el) pinned = null;
+      recompute();
     };
   }, []);
 
@@ -108,13 +139,15 @@ export default function CaseStudyVideoPlayer({ src, poster }: { src: string; pos
 
   const toggle = useCallback(() => {
     const el = ref.current;
-    if (!el) return;
+    const rec = el && registry.get(el);
+    if (!el || !rec) return;
     if (el.paused) {
-      manuallyPaused.current = false;
-      claimPlayback(el);
-      el.play().catch(() => {});
+      rec.manuallyPaused = false;
+      pinned = el;
+      recompute();
     } else {
-      manuallyPaused.current = true;
+      rec.manuallyPaused = true;
+      if (pinned === el) pinned = null;
       el.pause();
     }
   }, []);

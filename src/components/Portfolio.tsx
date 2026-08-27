@@ -161,14 +161,14 @@ function WallVideo({ item }: { item: WallItem }) {
   );
 }
 
-function WallImage({ item }: { item: WallItem }) {
+function WallImage({ item, priority }: { item: WallItem; priority: boolean }) {
   return (
     <div className="relative overflow-hidden group" style={{ aspectRatio: item.aspect }}>
       <Image
         src={item.src}
         alt={item.client ?? "Graft Media"}
         fill
-        loading="eager"
+        priority={priority}
         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         placeholder="blur"
@@ -216,9 +216,9 @@ export default function Portfolio() {
         className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4"
         style={{ columnGap: "3px" }}
       >
-        {wallItems.map((item) => (
+        {wallItems.map((item, i) => (
           <div key={item.id} className="break-inside-avoid" style={{ marginBottom: "3px" }}>
-            {item.type === "video" ? <WallVideo item={item} /> : <WallImage item={item} />}
+            {item.type === "video" ? <WallVideo item={item} /> : <WallImage item={item} priority={i < 4} />}
           </div>
         ))}
       </div>

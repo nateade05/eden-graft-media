@@ -22,8 +22,8 @@ const visualsGrid = ["visual-1.webp", "visual-2.webp", "visual-3.webp", "visual-
 
 const trackVideos = [
   { file: "kino-v2.mp4", poster: "kino-poster.jpg" },
-  { file: "not-tonight-v2.mp4", poster: "not-tonight-poster.jpg" },
-  { file: "wide-open-v2.mp4", poster: "wide-open-poster.jpg" },
+  { file: "not-tonight-v3.mp4", poster: "not-tonight-poster.jpg" },
+  { file: "wide-open-v3.mp4", poster: "wide-open-poster.jpg" },
 ];
 
 export default function MusicCaseStudy() {

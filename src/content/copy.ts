@@ -418,8 +418,8 @@ export const copy = {
       body:     "Three tracks, three visualisers, produced and graded for release.",
       tracks: [
         { title: "Kino",       description: "Shot in open field, close and handheld. The visual stays with the performance, not the production." },
-        { title: "Not Tonight", description: "Desert badlands at golden hour. Wide, still, and built around light rather than movement." },
-        { title: "Wide Open",  description: "A crowd and a floor, shot for the moment the track is actually built for." },
+        { title: "Not Tonight", description: "Neon and shadow on a corridor floor. Dancers in silhouette, built for the night the title promises." },
+        { title: "Wide Open",  description: "Open desert badlands at golden hour. Wide, still, and built around space rather than movement." },
       ],
     },
     banner: "Three tracks. One story.",
